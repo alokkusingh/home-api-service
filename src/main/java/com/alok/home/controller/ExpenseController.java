@@ -1,17 +1,10 @@
 package com.alok.home.controller;
 
 import com.alok.home.annotation.LogExecutionTime;
-import com.alok.home.model.YearMonth;
+import com.alok.home.commons.model.YearMonth;
 import com.alok.home.response.*;
-import com.alok.home.service.JobExecutorOfExpenseService;
 import com.alok.home.service.ExpenseService;
-import com.alok.home.service.FileStorageService;
-import com.alok.home.constant.UploadType;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
@@ -29,57 +22,12 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/expense")
 public class ExpenseController {
 
-    @Autowired
-    private FileStorageService fileStorageService;
-
-    @Autowired
-    private JobExecutorOfExpenseService expenseJobExecutorService;
 
     @Autowired
     private ExpenseService expenseService;
 
     @Value("${web.cache-control.max-age}")
     private Long cacheControlMaxAge;
-
-    @Deprecated
-    @LogExecutionTime
-    @CrossOrigin
-    @PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UploadFileResponse> uploadStatement(
-            @RequestParam MultipartFile file
-    ) {
-
-        log.info("Uploaded file: {}, type: {}, size: {}", file.getOriginalFilename(),
-                file.getContentType(), file.getSize());
-
-        String fineName = fileStorageService.storeFile(file, UploadType.ExpenseGoogleSheet);
-
-        // brute force way
-        try {
-            expenseJobExecutorService.executeAllJobs(true);
-        } catch (JobParametersInvalidException e) {
-            e.printStackTrace();
-        } catch (JobExecutionAlreadyRunningException e) {
-            e.printStackTrace();
-        } catch (JobRestartException e) {
-            e.printStackTrace();
-        } catch (JobInstanceAlreadyCompleteException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return ResponseEntity.ok()
-                .body(
-                        UploadFileResponse.builder()
-                                .fileName(fineName)
-                                .size(file.getSize())
-                                .fileType(file.getContentType())
-                                .message("File submitted for processing")
-                                .uploadType(UploadType.ExpenseGoogleSheet)
-                                .build()
-                );
-    }
 
     @LogExecutionTime
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

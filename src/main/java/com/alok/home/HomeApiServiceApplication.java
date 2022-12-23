@@ -15,8 +15,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Slf4j
 public class HomeApiServiceApplication implements ApplicationRunner {
 
-
-
 	public static void main(String[] args) {
 		SpringApplication.run(HomeApiServiceApplication.class, args);
 	}
