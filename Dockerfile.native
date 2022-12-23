@@ -1,21 +1,15 @@
 FROM alokkusingh/graalvm-ce:22.3.0-java17-arm64 AS builder
 ARG JAR_FILE
 RUN gu install native-image
-#RUN mkdir -p /build
 COPY src /home/app/src
 COPY pom.xml /home/app
 COPY native /home/app/native
-#ENV M2_HOME=/home/app
-#COPY /Users/aloksingh/.m2/settings.xml ~/.m2/settings.xml
 COPY settings.xml $M2_HOME/conf/settings.xml
 WORKDIR /home/app
 RUN ls /home/app
 RUN cat $M2_HOME/conf/settings.xml
 RUN echo $M2_HOME
 RUN mvn clean package -Pnative
-#COPY ${JAR_FILE} /build/app.jar
-#RUN ls
-#RUN cd /build && native-image --static -jar target/app.jar -H:Name=output
 
 FROM arm64v8/ubuntu:focal
 MAINTAINER Alok Singh (alok.ku.singh@gmail.com)

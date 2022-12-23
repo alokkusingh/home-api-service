@@ -14,5 +14,11 @@
       { "name" : "<init>", "parameterTypes" : [] },
       { "name" : "clone" }
     ]
+  },
+  {
+    "name" : "org.hibernate.dialect.MySQL8Dialect",
+    "allDeclaredFields": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
   }
 ]

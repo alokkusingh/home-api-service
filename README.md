@@ -6,9 +6,12 @@ Spring Boot Batch Processor
 ````
 
 #### Build base Image
-````
-docker buildx build --platform linux/arm64 --build-arg GRAALVM_VERSION=22.3.0 --build-arg JAVA_VERSION=java17 -t alokkusingh/graalvm-ce:22.3.0-java17-arm64 --output=type=docker -f Dockerfile.ol8-java17 .
-````
+   ````
+   docker buildx build --platform linux/arm64 --build-arg GRAALVM_VERSION=22.3.0 --build-arg JAVA_VERSION=java17 -t alokkusingh/graalvm-ce:22.3.0-java17-arm64 --output=type=docker -f Dockerfile.ol8-java17 .
+   ````
+   ````
+   
+   ````
 #### Build Application image
    ````
    docker build --progress=plain -f Dockerfile.native -t alokkusingh/home-api-service:latest -t alokkusingh/home-api-service:1.0.0 .
@@ -24,7 +27,7 @@ docker buildx build --platform linux/arm64 --build-arg GRAALVM_VERSION=22.3.0 --
    ````
 ### Manual commands - go inside and run binary manually
 ````
-ddocker run -it --entrypoint /bin/bash -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service
+docker run -it --entrypoint /bin/bash -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service
 ````
 ````
 java -Djava.security.egd=file:/dev/urandom -Dspring.profiles.active=prod -Dspring.datasource.url=jdbc:mysql://192.168.0.200:32306/home-stack -Dspring.datasource.hikari.minimum-idle=5 -Dspring.datasource.hikari.connection-timeout=20000 -Dspring.datasource.hikari.maximum-pool-size=10 -Dspring.datasource.hikari.idle-timeout=10000 -Dpring.datasource.hikari.max-lifetime=1000 -Dspring.datasource.hikari.auto-commit=true -jar /opt/app.jar
