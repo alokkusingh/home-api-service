@@ -1,6 +1,6 @@
 package com.alok.home;
 
-import com.alok.home.annotation.LogExecutionTime;
+import com.alok.home.commons.annotation.LogExecutionTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

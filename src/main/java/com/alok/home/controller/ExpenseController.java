@@ -1,6 +1,6 @@
 package com.alok.home.controller;
 
-import com.alok.home.annotation.LogExecutionTime;
+import com.alok.home.commons.annotation.LogExecutionTime;
 import com.alok.home.commons.model.YearMonth;
 import com.alok.home.response.*;
 import com.alok.home.service.ExpenseService;

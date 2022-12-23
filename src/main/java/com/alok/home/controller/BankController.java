@@ -1,6 +1,6 @@
 package com.alok.home.controller;
 
-import com.alok.home.annotation.LogExecutionTime;
+import com.alok.home.commons.annotation.LogExecutionTime;
 import com.alok.home.response.GetSalaryByCompanyResponse;
 import com.alok.home.response.GetTransactionResponse;
 import com.alok.home.response.GetTransactionsResponse;

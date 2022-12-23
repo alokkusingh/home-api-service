@@ -1,6 +1,6 @@
 package com.alok.home.controller;
 
-import com.alok.home.annotation.LogExecutionTime;
+import com.alok.home.commons.annotation.LogExecutionTime;
 import com.alok.home.response.GetInvestmentsResponse;
 import com.alok.home.service.InvestmentService;
 import lombok.extern.slf4j.Slf4j;
