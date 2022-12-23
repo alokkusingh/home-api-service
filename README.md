@@ -5,34 +5,32 @@ Spring Boot Batch Processor
 ````
 ````
 
-#### Build
-1. Maven Package
-   ````
-   mvn clean package
-   ````
-2. Docker Build, Push & Run
-   ````
-   docker build -t alokkusingh/statement-parser:latest -t alokkusingh/statement-parser:2.2.0 --build-arg JAR_FILE=target/spring-batch-pdf-parser-1.0.3-SNAPSHOT.jar .
-   ````
-   ````
-   docker push alokkusingh/statement-parser:latest
-   ````
-   ````
-   docker push alokkusingh/statement-parser:2.2.0
-   ````
-   ````
-   docker run -d -v /home/alok/data/git/BankStatements:/Users/aloksingh/BankStatements:rw,Z -p 8081:8081 --rm --name statement-parser alokkusingh/statement-parser
-   ````
-   
-### Manual commands
+#### Build base Image
 ````
-docker run -it --entrypoint /bin/bash -v /home/alok/data/git/BankStatements:/Users/aloksingh/BankStatements:rw,Z -p 8081:8081 --rm --name statement-parser alokkusingh/statement-parser
+docker buildx build --platform linux/arm64 --build-arg GRAALVM_VERSION=22.3.0 --build-arg JAVA_VERSION=java17 -t alokkusingh/graalvm-ce:22.3.0-java17-arm64 --output=type=docker -f Dockerfile.ol8-java17 .
+````
+#### Build Application image
+   ````
+   docker build --progress=plain -f Dockerfile.native -t alokkusingh/home-api-service:latest -t alokkusingh/home-api-service:1.0.0 .
+   ````
+   ````
+   docker push alokkusingh/home-api-service:latest
+   ````
+   ````
+   docker push alokkusingh/home-api-service:1.0.0
+   ````
+   ````
+   docker run -d -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service
+   ````
+### Manual commands - go inside and run binary manually
+````
+ddocker run -it --entrypoint /bin/bash -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service
 ````
 ````
 java -Djava.security.egd=file:/dev/urandom -Dspring.profiles.active=prod -Dspring.datasource.url=jdbc:mysql://192.168.0.200:32306/home-stack -Dspring.datasource.hikari.minimum-idle=5 -Dspring.datasource.hikari.connection-timeout=20000 -Dspring.datasource.hikari.maximum-pool-size=10 -Dspring.datasource.hikari.idle-timeout=10000 -Dpring.datasource.hikari.max-lifetime=1000 -Dspring.datasource.hikari.auto-commit=true -jar /opt/app.jar
 ````
 ````
-docker run -v /home/alok/data/git/BankStatements:/Users/aloksingh/BankStatements:rw,Z -p 8081:8081 --rm --name statement-parser alokkusingh/statement-parser --java.security.egd=file:/dev/urandom --spring.profiles.active=prod --spring.datasource.url=jdbc:mysql://192.168.0.200:32306/home-stack --spring.datasource.hikari.minimum-idle=5 --spring.datasource.hikari.connection-timeout=20000 --spring.datasource.hikari.maximum-pool-size=10 --spring.datasource.hikari.idle-timeout=10000 --pring.datasource.hikari.max-lifetime=1000 --spring.datasource.hikari.auto-commit=true
+docker run -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service --java.security.egd=file:/dev/urandom --spring.profiles.active=prod --spring.datasource.url=jdbc:mysql://192.168.1.200:32306/home-stack --spring.datasource.hikari.minimum-idle=5 --spring.datasource.hikari.connection-timeout=20000 --spring.datasource.hikari.maximum-pool-size=10 --spring.datasource.hikari.idle-timeout=10000 --pring.datasource.hikari.max-lifetime=1000 --spring.datasource.hikari.auto-commit=true
 ````
 
 ## MQTT Commands
