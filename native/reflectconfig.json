@@ -20,5 +20,11 @@
     "allDeclaredFields": true,
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true
+  },
+  {
+    "name" : "com.fasterxml.jackson.databind.ser.std.SqlDateSerializer",
+    "allDeclaredFields": true,
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
   }
 ]
