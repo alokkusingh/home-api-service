@@ -1,10 +1,6 @@
 # Home API Service 
 Home Stack API Service
 
-### How to run
-````
-````
-
 #### Build base Image
 GraalVM CE 22.3.0 ARMx64 builder image
    ````
