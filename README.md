@@ -1,5 +1,5 @@
-# Bank Account Statement Reader
-Spring Boot Batch Processor
+# Home API Service 
+Home Stack API Service
 
 ### How to run
 ````
@@ -10,7 +10,7 @@ Spring Boot Batch Processor
    docker buildx build --platform linux/arm64 --build-arg GRAALVM_VERSION=22.3.0 --build-arg JAVA_VERSION=java17 -t alokkusingh/graalvm-ce:22.3.0-java17-arm64 --output=type=docker -f Dockerfile.ol8-java17 .
    ````
    ````
-   
+   docker push alokkusingh/graalvm-ce:22.3.0-java17-arm64 
    ````
 #### Build Application image
    ````
@@ -30,10 +30,15 @@ Spring Boot Batch Processor
 docker run -it --entrypoint /bin/bash -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service
 ````
 ````
-java -Djava.security.egd=file:/dev/urandom -Dspring.profiles.active=prod -Dspring.datasource.url=jdbc:mysql://192.168.0.200:32306/home-stack -Dspring.datasource.hikari.minimum-idle=5 -Dspring.datasource.hikari.connection-timeout=20000 -Dspring.datasource.hikari.maximum-pool-size=10 -Dspring.datasource.hikari.idle-timeout=10000 -Dpring.datasource.hikari.max-lifetime=1000 -Dspring.datasource.hikari.auto-commit=true -jar /opt/app.jar
+.\home-api-service --java.security.egd=file:/dev/urandom --spring.profiles.active=prod --spring.datasource.url=jdbc:mysql://192.168.1.200:32306/home-stack \
+--spring.datasource.hikari.minimum-idle=5 --spring.datasource.hikari.connection-timeout=20000 --spring.datasource.hikari.maximum-pool-size=10 \
+--spring.datasource.hikari.idle-timeout=10000 --pring.datasource.hikari.max-lifetime=1000 --spring.datasource.hikari.auto-commit=true
 ````
 ````
-docker run -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service --java.security.egd=file:/dev/urandom --spring.profiles.active=prod --spring.datasource.url=jdbc:mysql://192.168.1.200:32306/home-stack --spring.datasource.hikari.minimum-idle=5 --spring.datasource.hikari.connection-timeout=20000 --spring.datasource.hikari.maximum-pool-size=10 --spring.datasource.hikari.idle-timeout=10000 --pring.datasource.hikari.max-lifetime=1000 --spring.datasource.hikari.auto-commit=true
+docker run -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service --java.security.egd=file:/dev/urandom --spring.profiles.active=prod \
+--spring.datasource.url=jdbc:mysql://192.168.1.200:32306/home-stack --spring.datasource.hikari.minimum-idle=5 --spring.datasource.hikari.connection-timeout=20000 \
+--spring.datasource.hikari.maximum-pool-size=10 --spring.datasource.hikari.idle-timeout=10000 --pring.datasource.hikari.max-lifetime=1000 \
+--spring.datasource.hikari.auto-commit=true
 ````
 
 ## MQTT Commands
