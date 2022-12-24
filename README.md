@@ -6,6 +6,7 @@ Home Stack API Service
 ````
 
 #### Build base Image
+GraalVM CE 22.3.0 ARMx64 builder image
    ````
    docker buildx build --platform linux/arm64 --build-arg GRAALVM_VERSION=22.3.0 --build-arg JAVA_VERSION=java17 -t alokkusingh/graalvm-ce:22.3.0-java17-arm64 --output=type=docker -f Dockerfile.ol8-java17 .
    ````
