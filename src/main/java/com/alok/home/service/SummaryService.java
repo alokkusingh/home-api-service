@@ -1,5 +1,6 @@
 package com.alok.home.service;
 
+import com.alok.home.commons.constant.InvestmentType;
 import com.alok.home.commons.model.TaxMonthly;
 import com.alok.home.commons.repository.TaxMonthlyRepository;
 import com.alok.home.config.CacheConfig;
@@ -15,6 +16,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,7 +37,7 @@ public class SummaryService {
     }
 
     @Cacheable(CacheConfig.CacheName.SUMMARY)
-    public GetMonthlySummaryResponse getMonthSummary() {
+    public GetMonthlySummaryResponse getMonthSummary(Integer lastXMonths, YearMonth sinceMonth) {
 
         log.info("Summary not available in cache");
         List<IExpenseMonthSum> expenseSums = expenseRepository.findSumGroupByMonth();
@@ -133,6 +135,19 @@ public class SummaryService {
                         )
                 );
 
+        // Investment through Company aggregation
+        Map<String, Long> investmentByCompanyMonthly = investments.stream()
+                .filter(investment -> !InvestmentType.LIC.name().equals(investment.getHead()))
+                .collect(
+                        Collectors.groupingBy(
+                                investment -> String.format("%d-%02d", investment.getYearx(), investment.getMonthx()),
+                                Collectors.collectingAndThen(
+                                        Collectors.summarizingInt(Investment::getContribution),
+                                        iss -> iss.getSum()
+                                )
+                        )
+                );
+
         // Tax aggregation
         Map<String, Long> taxMonthly = taxes.stream()
                 .collect(
@@ -145,9 +160,15 @@ public class SummaryService {
                         )
                 );
 
-        // Expense aggregation
-        List<GetMonthlySummaryResponse.MonthlySummary> monthSummaryRecord = expenseMonthSumMap.values().stream().
-                map(
+        // Prepare Summary
+        YearMonth xMonthBeforeYearMonth = sinceMonth.minusMonths(1);
+        if (lastXMonths != null)
+            xMonthBeforeYearMonth = YearMonth.now().minusMonths(lastXMonths);
+
+        YearMonth finalXMonthBeforeYearMonth = xMonthBeforeYearMonth;
+        List<GetMonthlySummaryResponse.MonthlySummary> monthSummaryRecord = expenseMonthSumMap.values().stream()
+                .filter(expenseMonthRecord -> YearMonth.of(expenseMonthRecord.getYearx(), expenseMonthRecord.getMonthx()).isAfter(finalXMonthBeforeYearMonth))
+                .map(
                         expenseMonthRecord -> GetMonthlySummaryResponse.MonthlySummary.builder()
                                 .year(expenseMonthRecord.getYearx())
                                 .month(expenseMonthRecord.getMonthx())
@@ -166,6 +187,14 @@ public class SummaryService {
                                 .taxAmount(
                                         taxMonthly.get(String.format("%d-%02d", expenseMonthRecord.getYearx(), expenseMonthRecord.getMonthx()))
                                 )
+                                .ctc(
+                                        add(investmentByCompanyMonthly.get(String.format("%d-%02d", expenseMonthRecord.getYearx(), expenseMonthRecord.getMonthx())),
+                                            add(
+                                                round(monthlySalary.get(String.format("%d-%02d", expenseMonthRecord.getYearx(), expenseMonthRecord.getMonthx()))),
+                                                taxMonthly.get(String.format("%d-%02d", expenseMonthRecord.getYearx(), expenseMonthRecord.getMonthx()))
+                                            )
+                                        )
+                                )
                                 .build()
                 )
                 .collect(Collectors.toList());
@@ -173,6 +202,7 @@ public class SummaryService {
 
         return GetMonthlySummaryResponse.builder()
                 .records(monthSummaryRecord)
+                .count(monthSummaryRecord.size())
                 .build();
     }
 
@@ -184,5 +214,25 @@ public class SummaryService {
             return a;
 
         return a - b;
+    }
+
+    private Long add(Long a, Long b) {
+        if (a== null && b == null)
+            return 0L;
+
+        if (a == null)
+            return b;
+
+        if (b == null)
+            return a;
+
+        return a + b;
+    }
+
+    private Long round(Double x) {
+        if (x == null)
+            return 0L;
+
+        return Math.round(x);
     }
 }

@@ -23,5 +23,6 @@ public class GetMonthlySummaryResponse {
         private Double savingAmount;
         private Long investmentAmount;
         private Long taxAmount;
+        private Long ctc;
     }
 }
