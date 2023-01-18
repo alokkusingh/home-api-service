@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,15 +51,19 @@ public class InvestmentService {
                 })
                 .collect(Collectors.collectingAndThen(
                         CustomCollectors.toMonthInvestmentList(),
-                        monthInvestmentSummary -> {
-                           return GetInvestmentsResponse.builder()
-                                   .investmentAmount(monthInvestmentSummary.getValue0())
-                                   .asOnValue(monthInvestmentSummary.getValue1())
-                                   .monthInvestments(monthInvestmentSummary.getValue3())
-                                   .investmentsByType(monthInvestmentSummary.getValue2())
-                                   .build();
-                        }
+                        monthInvestmentSummary -> GetInvestmentsResponse.builder()
+                                .investmentAmount(monthInvestmentSummary.getValue0())
+                                .asOnValue(monthInvestmentSummary.getValue1())
+                                .monthInvestments(monthInvestmentSummary.getValue3())
+                                .investmentsByType(monthInvestmentSummary.getValue2())
+                                .build()
                 ));
+    }
+
+    public List<Investment> getMonthInvestments(YearMonth yearMonth) {
+        log.info("Month Investments not available in cache");
+
+        return investmentRepository.findAllByYearMonth(yearMonth.getYear(), yearMonth.getMonth().getValue());
     }
 
     @Deprecated
