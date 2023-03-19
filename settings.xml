@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+<activeProfiles>
+    <activeProfile>github</activeProfile>
+  </activeProfiles>
+
+  <profiles>
+    <profile>
+      <id>github</id>
+      <repositories>
+        <repository>
+          <id>central</id>
+          <url>https://repo1.maven.org/maven2</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+        <repository>
+          <id>github</id>
+          <name>GitHub OWNER Apache Maven Packages</name>
+          <!--<url>https://maven.pkg.github.com/alokkusingh/mygate-account-reconciler</url>-->
+          <url>https://maven.pkg.github.com/alokkusingh</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+        <repository>
+          <id>github-avro</id>
+          <name>GitHub OWNER Apache Maven Packages</name>
+          <url>https://maven.pkg.github.com/alokkusingh/avro-serializer</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+        <repository>
+          <id>mqtt-proxy</id>
+          <name>GitHub OWNER Apache Maven Packages</name>
+          <url>https://maven.pkg.github.com/alokkusingh/mqtt-proxy</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+        <repository>
+          <id>home-commons</id>
+          <name>GitHub OWNER Apache Maven Packages</name>
+          <url>https://maven.pkg.github.com/alokkusingh/home-commons</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+
+  <servers>
+    <server>
+      <id>github</id>
+      <username>alokkusingh</username>
+      <password>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</password>
+    </server>
+    <server>
+      <id>github-avro</id>
+      <username>alokkusingh</username>
+      <password>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</password>
+    </server>
+    <server>
+      <id>mqtt-proxy</id>
+      <username>alokkusingh</username>
+      <password>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</password>
+    </server>
+    <server>
+      <id>home-commons</id>
+      <username>alokkusingh</username>
+      <password>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</password>
+    </server>
+    <server>
+      <id>registry.hub.docker.com</id>
+      <username>alokkusingh</username>
+      <password>51a84813-c482-4520-a1db-058c77b518b1</password>
+     </server>
+  </servers>
+</settings>

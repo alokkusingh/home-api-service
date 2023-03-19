@@ -12,6 +12,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class DayExpenseCollector implements Collector<Expense, Map<LocalDate, GetExpensesResponseAggByDay.DayExpense>, List<GetExpensesResponseAggByDay.DayExpense>> {
 
@@ -53,7 +54,11 @@ public class DayExpenseCollector implements Collector<Expense, Map<LocalDate, Ge
         @Override
         public Function<Map<LocalDate, GetExpensesResponseAggByDay.DayExpense>, List<GetExpensesResponseAggByDay.DayExpense>> finisher() {
 
-            return (dayExpensesMap) -> new ArrayList<>(dayExpensesMap.values());
+            return dayExpensesMap -> {
+                ArrayList<GetExpensesResponseAggByDay.DayExpense> dayWiseExpenses = new ArrayList<>(dayExpensesMap.values());
+                dayWiseExpenses.sort(Comparator.comparing(GetExpensesResponseAggByDay.DayExpense::getDate).reversed());
+                return dayWiseExpenses;
+            };
         }
 
         @Override
