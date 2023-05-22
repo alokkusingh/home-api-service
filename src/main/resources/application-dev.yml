@@ -1,0 +1,40 @@
+server:
+    port: 8081
+auth:
+    token:
+        issuer:
+            urls:
+                google: https://dashboard.alok.live/home/auth/google/validate/id-token
+                home-stack-auth: https://dashboard.alok.live/home/auth/home/token/validate
+flyway:
+    baselineOnMigrate: true
+    enabled: false
+    locations: ~/test
+spring:
+    datasource:
+        password: ''
+        url: jdbc:h2:~/test-v4
+        username: sa
+    debug: true
+    h2:
+        console:
+            enabled: true
+            settings:
+                web-allow-others: true
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.H2Dialect
+                format_sql: true
+                id:
+                    new_generator_mappings: true
+        show-sql: 'true '
+    sql:
+        init:
+            mode: always
+iot:
+    mqtt:
+        host: arktr4szflm0y-ats.iot.ap-south-1.amazonaws.com
+        port: 8883

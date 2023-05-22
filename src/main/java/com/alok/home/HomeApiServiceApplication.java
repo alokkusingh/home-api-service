@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@ConfigurationPropertiesScan({"com.alok.spring.mqtt.config", "com.alok.spring.config"})
+@ConfigurationPropertiesScan({"com.alok.home.mqtt.config", "com.alok.home.config"})
 @EnableScheduling
 @SpringBootApplication
 @Slf4j

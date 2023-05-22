@@ -33,11 +33,14 @@ import java.net.ConnectException;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${auth.url}")
-    private String authUrl;
+   @Autowired
+   private TokenIssuerConfig tokenIssuerConfig;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Value("${application.id}")
+    private String applicationId;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,14 +50,14 @@ public class SecurityConfig {
                 .addFilterBefore(customAuthFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/actuator", "/actuator/**").permitAll();
-                    auth.requestMatchers("/odion/**").hasAnyRole("ADMIN", "USER");
-                    auth.requestMatchers("/expense", "/expense/**").hasAnyRole("ADMIN", "USER");
-                    auth.requestMatchers("/investment", "/investment/**").hasAnyRole("ADMIN", "USER");
-                    auth.requestMatchers("/tax", "/tax/**").hasAnyRole("ADMIN", "USER");
+                    auth.requestMatchers("/odion/**").hasAnyRole("ADMIN", "USER", "home_api_ro", "home_api_rw");
+                    auth.requestMatchers("/expense", "/expense/**").hasAnyRole("ADMIN", "USER", "home_api_ro", "home_api_rw");
+                    auth.requestMatchers("/investment", "/investment/**").hasAnyRole("ADMIN", "USER", "home_api_ro", "home_api_rw");
+                    auth.requestMatchers("/tax", "/tax/**").hasAnyRole("ADMIN", "USER", "home_api_ro", "home_api_rw");
 
-                    auth.requestMatchers("/summary/**").hasAnyRole("ADMIN");
-                    auth.requestMatchers("/bank", "/bank/**").hasAnyRole("ADMIN");
-                    auth.requestMatchers("/cache", "/cache/**").hasAnyRole("ADMIN");
+                    auth.requestMatchers("/summary/**").hasAnyRole("ADMIN", "home_api_ro", "home_api_rw");
+                    auth.requestMatchers("/bank", "/bank/**").hasAnyRole("ADMIN", "home_api_ro", "home_api_rw");
+                    auth.requestMatchers("/cache", "/cache/**").hasAnyRole("ADMIN", "home_api_ro", "home_api_rw");
 
                     auth.anyRequest().authenticated();
                 })
@@ -73,19 +76,40 @@ public class SecurityConfig {
             @Override
             protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
                 final String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+                String issuer = request.getHeader("issuer");
+                issuer = issuer ==  null? "google": issuer;
+                String clientId = request.getHeader("client_id");
+
                 if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
                     filterChain.doFilter(request, response);
                     return;
                 }
 
-                // Get jwt token and validate
-                Request authRequest = new Request.Builder()
-                        .url(authUrl)
-                        .method("POST", body)
-                        .addHeader("Authorization", bearerToken)
-                        .build();
+                if (!issuer.equals("google") && clientId == null) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
 
-                UserInfo userInfo = null;
+                // Get jwt token and validate
+                Request authRequest = null;
+                if (issuer.equals("google")) {
+                    authRequest = new Request.Builder()
+                            .url(tokenIssuerConfig.getUrls().get(issuer))
+                            .method("POST", body)
+                            .addHeader("Authorization", bearerToken)
+                            .build();
+                } else {
+                    authRequest = new Request.Builder()
+                            .url(tokenIssuerConfig.getUrls().get(issuer))
+                            .method("POST", body)
+                            .addHeader("Authorization", bearerToken)
+                            .addHeader("subject", clientId)
+                            .addHeader("audience", applicationId)
+                            .build();
+                }
+
+
+                UserInfo userInfo;
                 try {
                     Response authResponse = client.newCall(authRequest).execute();
                     if (authResponse == null || !authResponse.isSuccessful()) {
