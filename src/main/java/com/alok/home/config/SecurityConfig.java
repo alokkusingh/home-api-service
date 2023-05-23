@@ -78,7 +78,7 @@ public class SecurityConfig {
                 final String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
                 String issuer = request.getHeader("issuer");
                 issuer = issuer ==  null? "google": issuer;
-                String clientId = request.getHeader("client_id");
+                String clientId = request.getHeader("client-id");
 
                 if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
                     filterChain.doFilter(request, response);
@@ -86,6 +86,7 @@ public class SecurityConfig {
                 }
 
                 if (!issuer.equals("google") && clientId == null) {
+                    log.error("client-id is mandatory for non Google IdP token");
                     filterChain.doFilter(request, response);
                     return;
                 }
@@ -93,12 +94,14 @@ public class SecurityConfig {
                 // Get jwt token and validate
                 Request authRequest = null;
                 if (issuer.equals("google")) {
+                    log.debug("Authenticating with google IdP");
                     authRequest = new Request.Builder()
                             .url(tokenIssuerConfig.getUrls().get(issuer))
                             .method("POST", body)
                             .addHeader("Authorization", bearerToken)
                             .build();
                 } else {
+                    log.debug("Authenticating with home-auth IdP");
                     authRequest = new Request.Builder()
                             .url(tokenIssuerConfig.getUrls().get(issuer))
                             .method("POST", body)
@@ -119,6 +122,7 @@ public class SecurityConfig {
                     }
 
                     userInfo = objectMapper.readValue(authResponse.body().string(), UserInfo.class);
+                    log.debug("Auth response: {}", userInfo);
                 } catch (RuntimeException | ConnectException rte) {
                     rte.printStackTrace();
                     log.error("Error: Auth APi call failed");
