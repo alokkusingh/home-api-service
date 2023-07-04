@@ -61,22 +61,11 @@ public class InvestmentService {
     }
 
     public GetInvestmentsRorMetricsResponse getInvestmentsReturnMetrics() {
-        List<Investment> pfInvestments = investmentRepository.findAllByHead("PF");
-        List<Investment> npsInvestments = investmentRepository.findAllByHead("NPS");
-        List<Investment> licInvestments = investmentRepository.findAllByHead("LIC");
-        List<Investment> shareInvestments = investmentRepository.findAllByHead("SHARE");
-        List<Investment> totalInvestments = investmentRepository.findAllNonZero();
 
-        Collections.sort(pfInvestments);
-        Collections.sort(npsInvestments);
-        Collections.sort(licInvestments);
-        Collections.sort(shareInvestments);
-        Collections.sort(totalInvestments);
-
-        Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> pfYearlyRor = getRorByYear(pfInvestments);
-        Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> npsYearlyRor = getRorByYear(npsInvestments);
-        Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> licYearlyRor = getRorByYear(licInvestments);
-        Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> shareYearlyRor = getRorByYear(shareInvestments);
+        Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> pfYearlyRor = getRorByYear(investmentRepository.findAllByHead("PF"));
+        Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> npsYearlyRor = getRorByYear(investmentRepository.findAllByHead("NPS"));
+        Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> licYearlyRor = getRorByYear(investmentRepository.findAllByHead("LIC"));
+        Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> shareYearlyRor = getRorByYear(investmentRepository.findAllByHead("SHARE"));
 
         GetInvestmentsRorMetricsResponse.InvestmentsRorMetric cr = GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.builder()
                 .metric("Cumulative Return (%)")
@@ -110,7 +99,6 @@ public class InvestmentService {
                             .build());
                 }
         );
-
 
         return GetInvestmentsRorMetricsResponse.builder()
                 .investmentsRorMetrics(yearRorMetrics)
@@ -157,6 +145,7 @@ public class InvestmentService {
 
     private Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> getRorByYear(List<Investment> investments) {
         Map<Short, List<Investment>> investmentByYear = investments.stream()
+                .sorted()
                 .filter(investment -> YearMonth.of(investment.getYearx(), investment.getMonthx()).isBefore(YearMonth.now()))
                 .collect(Collectors.groupingBy(Investment::getYearx));
         List<Short> years = investmentByYear.keySet().stream().sorted().toList();
@@ -167,7 +156,6 @@ public class InvestmentService {
             List<Investment> previousYearInvestments = investmentByYear.get(Integer.valueOf(year-1).shortValue());
             int prevYearClosingValue = 0;
             if (previousYearInvestments != null && !previousYearInvestments.isEmpty()) {
-                Collections.sort(previousYearInvestments);
                 prevYearClosingValue = previousYearInvestments.get(previousYearInvestments.size() - 1).getValueAsOnMonth();
             }
 
@@ -178,8 +166,6 @@ public class InvestmentService {
     }
 
     private GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn getRorForYear(List<Investment> investments, int prevYearClosing) {
-        Collections.sort(investments);
-
         Integer totalContribution = investments.stream()
                 .map(Investment::getContribution)
                 .reduce(0, Integer::sum);
