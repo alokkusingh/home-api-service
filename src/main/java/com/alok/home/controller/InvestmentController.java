@@ -3,6 +3,7 @@ package com.alok.home.controller;
 import com.alok.home.commons.annotation.LogExecutionTime;
 import com.alok.home.commons.model.Investment;
 import com.alok.home.response.GetInvestmentsResponse;
+import com.alok.home.response.GetInvestmentsRorMetricsResponse;
 import com.alok.home.service.InvestmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +39,15 @@ public class InvestmentController {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
                 .body(investmentService.getAllInvestments());
+    }
+
+    @LogExecutionTime
+    @GetMapping(value = "/return", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetInvestmentsRorMetricsResponse> getInvestmentsRor() {
+
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
+                .body(investmentService.getInvestmentsReturnMetrics());
     }
 
     @LogExecutionTime

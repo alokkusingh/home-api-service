@@ -1,0 +1,39 @@
+server:
+    port: 8081
+auth:
+    token:
+        issuer:
+            urls:
+                google: https://dashboard.alok.live/home/auth/google/validate/id-token
+                home-stack-auth: https://dashboard.alok.live/home/auth/home/token/validate
+flyway:
+    baselineOnMigrate: true
+    enabled: false
+    locations: ~/test
+spring:
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        hikari:
+            connection-timeout: 30000
+            idle-timeout: 600000
+            max-lifetime: 1800000
+            maximum-pool-size: 10
+            minimum-idle: 10
+        password: password
+        url: jdbc:mysql://192.168.1.200:32306/home-stack
+        username: root
+    debug: true
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL8Dialect
+                format_sql: true
+                id:
+                    new_generator_mappings: true
+        show-sql: false
+iot:
+    mqtt:
+        host: arktr4szflm0y-ats.iot.ap-south-1.amazonaws.com
+        port: 8883
