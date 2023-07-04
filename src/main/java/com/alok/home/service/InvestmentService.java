@@ -148,10 +148,10 @@ public class InvestmentService {
                 .sorted()
                 .filter(investment -> YearMonth.of(investment.getYearx(), investment.getMonthx()).isBefore(YearMonth.now()))
                 .collect(Collectors.groupingBy(Investment::getYearx));
+
         List<Short> years = investmentByYear.keySet().stream().sorted().toList();
 
         Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> investmentRorByYear = new HashMap<>();
-
         years.forEach(year -> {
             List<Investment> previousYearInvestments = investmentByYear.get(Integer.valueOf(year-1).shortValue());
             int prevYearClosingValue = 0;
