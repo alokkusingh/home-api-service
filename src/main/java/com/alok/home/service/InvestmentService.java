@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -27,17 +26,14 @@ public class InvestmentService {
     @Autowired
     private InvestmentRepository investmentRepository;
 
-    private final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
-
     public GetInvestmentsResponse getAllInvestments() {
         log.info("All Investments not available in cache");
 
         List<Investment> investments = investmentRepository.findAll();
 
         LocalDateTime now = LocalDateTime.now();
-        Short currentYear = Short.valueOf(DateTimeFormatter.ofPattern("yyyy").format(now));
-        Short currentMonth = Short.valueOf(DateTimeFormatter.ofPattern("MM").format(now));
+        short currentYear = Short.parseShort(DateTimeFormatter.ofPattern("yyyy").format(now));
+        short currentMonth = Short.parseShort(DateTimeFormatter.ofPattern("MM").format(now));
 
         return investments.stream()
                 .filter(investment -> {
@@ -86,7 +82,7 @@ public class InvestmentService {
                                 }
                         )
                 )
-                .collect(Collectors.toList());
+                .toList();
         Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> totalYearlyRor = getRorByYear(allAccumulatedInvestmentByMonth);
 
 
@@ -112,16 +108,15 @@ public class InvestmentService {
         yearRorMetrics.add(cr);
         yearRorMetrics.add(ar);
         pfYearlyRor.keySet().stream().sorted(Comparator.reverseOrder()).forEach(
-                year -> {
-                    yearRorMetrics.add(GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.builder()
+                year -> yearRorMetrics.add(GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.builder()
                             .metric("RoR - " + year)
                             .PF(pfYearlyRor.get(year))
                             .NPS(npsYearlyRor.get(year))
                             .LIC(licYearlyRor.get(year))
                             .SHARE(shareYearlyRor.get(year))
                             .total(totalYearlyRor.get(year))
-                            .build());
-                }
+                            .build())
+
         );
 
         return GetInvestmentsRorMetricsResponse.builder()
@@ -129,48 +124,11 @@ public class InvestmentService {
                 .build();
     }
 
-    private GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn getCumulativeReturn(Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> yeralyRor) {
-
-        return GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
-                .beg(0)
-                .end(yeralyRor.entrySet().stream()
-                        .map(yearlyRor -> yearlyRor.getValue().getEnd())
-                        .reduce(0, Integer::max))
-                .inv(yeralyRor.entrySet().stream()
-                        .map(yearlyRor -> yearlyRor.getValue().getInv())
-                        .reduce(0, Integer::sum))
-                .ror(BigDecimal.valueOf(
-                        yeralyRor.entrySet().stream()
-                        .map(yearlyRor -> yearlyRor.getValue().getRor())
-                        .reduce(0.0, Double::sum)).setScale(2, RoundingMode.HALF_UP).doubleValue()
-                )
-                .build();
-    }
-
-    private GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn getAverageReturn(Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> yeralyRor) {
-
-        return GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
-                .beg(0)
-                .end(yeralyRor.entrySet().stream()
-                        .map(yearlyRor -> yearlyRor.getValue().getEnd())
-                        .reduce(0, Integer::max))
-                .inv(yeralyRor.entrySet().stream()
-                        .map(yearlyRor -> yearlyRor.getValue().getInv())
-                        .reduce(0, Integer::sum))
-                .ror(BigDecimal.valueOf(yeralyRor.entrySet().stream()
-                        .filter(entry -> entry.getValue().getBeg() != 0)
-                        .map(entry -> entry.getValue().getRor())
-                        .mapToDouble(x -> x)
-                        .average()
-                        .getAsDouble()).setScale(2, RoundingMode.HALF_UP).doubleValue()
-                )
-                .build();
-    }
-
     private Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> getRorByYear(List<Investment> investments) {
         Map<Short, List<Investment>> investmentByYear = investments.stream()
                 .sorted()
-                .filter(investment -> YearMonth.of(investment.getYearx(), investment.getMonthx()).isBefore(YearMonth.now()))
+                .filter(investment -> investment.getValueAsOnMonth() != null && investment.getValueAsOnMonth() > 0) // start month
+                .filter(investment -> YearMonth.of(investment.getYearx(), investment.getMonthx()).isBefore(YearMonth.now())) // end month
                 .collect(Collectors.groupingBy(Investment::getYearx));
 
         List<Short> years = investmentByYear.keySet().stream().sorted().toList();
@@ -190,6 +148,8 @@ public class InvestmentService {
     }
 
     private GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn getRorForYear(List<Investment> investments, int prevYearClosing) {
+        int numberOfMonthInvestments = investments.size();
+
         Integer totalContribution = investments.stream()
                 .map(Investment::getContribution)
                 .reduce(0, Integer::sum);
@@ -210,17 +170,57 @@ public class InvestmentService {
                 .inv(totalContribution)
                 .end(closingBalance)
                 //.ror(new BigDecimal(monthlyRors.stream().mapToDouble(x -> x).average().getAsDouble()).setScale(2, RoundingMode.HALF_UP).doubleValue())
-                .ror(new BigDecimal(monthlyRors.stream().mapToDouble(x -> x).sum()).setScale(2, RoundingMode.HALF_UP).doubleValue())
+                .ror(BigDecimal.valueOf((monthlyRors.stream().mapToDouble(x -> x).sum())*12/numberOfMonthInvestments).setScale(2, RoundingMode.HALF_UP).doubleValue())
                 .build();
     }
 
     private double getRorForMonth(Investment investment, int prevMonthClosing) {
-        double totalInvestment = prevMonthClosing + investment.getContribution();
+        double totalInvestment = (double) prevMonthClosing + investment.getContribution();
         if (totalInvestment == 0.0)
             return 0.0;
 
         double gain = investment.getValueAsOnMonth() - totalInvestment;
         return (gain * 100) / totalInvestment;
+    }
+
+    private GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn getCumulativeReturn(Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> yeralyRor) {
+
+        return GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
+                .beg(0)
+                .end(yeralyRor.values().stream()
+                        .map(GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn::getEnd)
+                        .reduce(0, Integer::max))
+                .inv(yeralyRor.values().stream()
+                        .map(GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn::getInv)
+                        .reduce(0, Integer::sum))
+                .ror(BigDecimal.valueOf(
+                        yeralyRor.values().stream()
+                                .map(GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn::getRor)
+                                .reduce(0.0, Double::sum)).setScale(2, RoundingMode.HALF_UP).doubleValue()
+                )
+                .build();
+    }
+
+    private GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn getAverageReturn(
+            Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> yearlyRors
+    ) {
+
+        return GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
+                .beg(0)
+                .end(yearlyRors.values().stream()
+                        .map(GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn::getEnd)
+                        .reduce(0, Integer::max))
+                .inv(yearlyRors.values().stream()
+                        .map(GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn::getInv)
+                        .reduce(0, Integer::sum))
+                .ror(BigDecimal.valueOf(yearlyRors.values().stream()
+                        .filter(investmentsReturn -> investmentsReturn.getBeg() != 0)
+                        .map(GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn::getRor)
+                        .mapToDouble(x -> x)
+                        .average()
+                        .getAsDouble()).setScale(2, RoundingMode.HALF_UP).doubleValue()
+                )
+                .build();
     }
 
 
@@ -230,15 +230,18 @@ public class InvestmentService {
         return investmentRepository.findAllByYearMonth(yearMonth.getYear(), yearMonth.getMonth().getValue());
     }
 
-    @Deprecated
+    /**
+     * @deprecated (later release, a batter version of the same function available, kept only for reference)
+     */
+    @Deprecated(since = "0", forRemoval = true)
     public GetInvestmentsResponse getAllInvestmentsX() {
         log.info("All Investments not available in cache");
 
         List<Investment> investments = investmentRepository.findAll();
 
         LocalDateTime now = LocalDateTime.now();
-        Short currentYear = Short.valueOf(DateTimeFormatter.ofPattern("yyyy").format(now));
-        Short currentMonth = Short.valueOf(DateTimeFormatter.ofPattern("MM").format(now));
+        short currentYear = Short.parseShort(DateTimeFormatter.ofPattern("yyyy").format(now));
+        short currentMonth = Short.parseShort(DateTimeFormatter.ofPattern("MM").format(now));
 
         Map<String, GetInvestmentsResponse.MonthInvestment> monthInvestmentsMap = investments.stream()
                 .filter(investment -> {
