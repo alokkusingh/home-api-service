@@ -9,10 +9,14 @@ spring:
                 jdbc:
                     time_zone: UTC
     profiles:
-        active: devmysql
+        active: dev
 server:
     servlet:
         context-path: /home/api
+    compression:
+      enabled: true
+      min-response-size: 2KB
+
 web:
     cache-control:
         max-age: 30
