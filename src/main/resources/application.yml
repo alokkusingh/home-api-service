@@ -9,7 +9,7 @@ spring:
                 jdbc:
                     time_zone: UTC
     profiles:
-        active: dev
+        active: devmysql
 server:
     servlet:
         context-path: /home/api

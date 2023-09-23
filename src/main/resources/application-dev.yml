@@ -13,7 +13,7 @@ flyway:
 spring:
     datasource:
         password: ''
-        url: jdbc:h2:~/test-v4
+        url: jdbc:h2:~/test-v4;AUTO_SERVER=TRUE
         username: sa
     debug: true
     h2:
