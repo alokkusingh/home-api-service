@@ -90,7 +90,8 @@ public class OdionService {
                     headAccountBalances.get(head).addAll(
                         accountBalances.stream()
                             .filter(accountBalance -> accountBalance.getAccount() == OdionTransaction.Account.SAVING
-                                    || accountBalance.getAccount() == OdionTransaction.Account.SBI_MAX_GAIN)
+                                    || accountBalance.getAccount() == OdionTransaction.Account.SBI_MAX_GAIN
+                                    || accountBalance.getAccount() == OdionTransaction.Account.BOB_ADVANTAGE)
                             .sorted(Comparator.comparing(GetOdionAccountsBalanceResponse.AccountBalance::getBalance))
                             .toList()
                     );
