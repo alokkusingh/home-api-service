@@ -137,7 +137,11 @@ public class SummaryService {
 
         // Investment through Company aggregation
         Map<String, Long> investmentByCompanyMonthly = investments.stream()
-                .filter(investment -> !InvestmentType.LIC.name().equals(investment.getHead()))
+                .filter(investment -> !(
+                        InvestmentType.LIC.name().equals(investment.getHead()) ||
+                        InvestmentType.SHARE.name().equals(investment.getHead())
+                        )
+                )
                 .collect(
                         Collectors.groupingBy(
                                 investment -> String.format("%d-%02d", investment.getYearx(), investment.getMonthx()),
