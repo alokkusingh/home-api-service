@@ -13,6 +13,7 @@ public class GetInvestmentsResponse {
     private Long investmentAmount;
     private Long asOnValue;
     private Map<String, Long> investmentsByType;
+    private Map<String, Long> investmentsValueByType;
     private List<MonthInvestment> monthInvestments;
 
     @Data

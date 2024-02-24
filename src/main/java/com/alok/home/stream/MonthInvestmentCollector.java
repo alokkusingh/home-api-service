@@ -14,28 +14,30 @@ import java.util.stream.Collector;
 import lombok.Data;
 import org.javatuples.Pair;
 import org.javatuples.Quartet;
+import org.javatuples.Quintet;
 
 // Assumption the investment is sorted on YearMonth Asc
 public class MonthInvestmentCollector implements
         Collector<
                 Investment,
-                Quartet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>,
-                Quartet<Long, Long, Map<String, Long>, List<GetInvestmentsResponse.MonthInvestment>>
+                Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>,
+                Quintet<Long, Long, Map<String, Long>, Map<String, Long>, List<GetInvestmentsResponse.MonthInvestment>>
                 > {
     @Override
-    public Supplier<Quartet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>> supplier() {
-        return () -> new Quartet<>(new MutableLong(), Pair.with(new MutableYearMonth(), new MutableLong()), new HashMap<>(), new HashMap<>());
+    public Supplier<Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>> supplier() {
+        return () -> new Quintet<>(new MutableLong(), Pair.with(new MutableYearMonth(), new MutableLong()), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
     @Override
-    public BiConsumer<Quartet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>, Investment> accumulator() {
-        return (investmentSummaryQuartet, investment) -> {
+    public BiConsumer<Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>, Investment> accumulator() {
+        return (investmentSummaryQuintet, investment) -> {
             var yearMonth = YearMonth.of(investment.getYearx(), investment.getMonthx());
 
             // Aggregate for total summary
-            investmentSummaryQuartet.getValue0().add(investment.getContribution());
-                // All Investment type as on value to be accumulated
-            var lastMonthValue = investmentSummaryQuartet.getValue1();
+            investmentSummaryQuintet.getValue0().add(investment.getContribution());
+
+            // All Investment type as on value to be accumulated
+            var lastMonthValue = investmentSummaryQuintet.getValue1();
             if (yearMonth.equals(lastMonthValue.getValue0().getValue())) {
                 lastMonthValue.getValue1().add(investment.getValueAsOnMonth());
             } else {
@@ -43,15 +45,21 @@ public class MonthInvestmentCollector implements
                 lastMonthValue.getValue1().setValue(investment.getValueAsOnMonth());
             }
 
-            // Aggregation for each investment type
-            var categoryInvestmentMap = investmentSummaryQuartet.getValue2();
+            // Aggregation investment for each investment type
+            var categoryInvestmentMap = investmentSummaryQuintet.getValue2();
             categoryInvestmentMap.compute(investment.getHead(),
                     (head, value) -> value == null? investment.getContribution(): value + investment.getContribution()
             );
 
+            // Aggregation investment value for each investment type
+            var categoryInvestmentValueMap = investmentSummaryQuintet.getValue3();
+            categoryInvestmentValueMap.compute(investment.getHead(),
+                    (head, value) -> Long.valueOf(investment.getValueAsOnMonth())
+            );
+
             // Aggregation fo the month
             // note - each month for each investment type there will one Investment object
-            var yearMonthInvestmentMap = investmentSummaryQuartet.getValue3();
+            var yearMonthInvestmentMap = investmentSummaryQuintet.getValue4();
             if (!yearMonthInvestmentMap.containsKey(yearMonth)) {
                 yearMonthInvestmentMap.put(yearMonth, GetInvestmentsResponse.MonthInvestment.builder()
                                 .yearMonth(yearMonth.toString())
@@ -63,7 +71,7 @@ public class MonthInvestmentCollector implements
             }
             var monthInvestment = yearMonthInvestmentMap.get(yearMonth);
             monthInvestment.setInvestmentAmount(monthInvestment.getInvestmentAmount() + investment.getContribution());
-            monthInvestment.setAsOnInvestment(investmentSummaryQuartet.getValue0().getValue());
+            monthInvestment.setAsOnInvestment(investmentSummaryQuintet.getValue0().getValue());
             monthInvestment.setAsOnValue(monthInvestment.getAsOnValue() + investment.getValueAsOnMonth());
             monthInvestment.getInvestments().add(GetInvestmentsResponse.MonthInvestment.Investment.builder()
                     .head(investment.getHead())
@@ -75,20 +83,21 @@ public class MonthInvestmentCollector implements
     }
 
     @Override
-    public BinaryOperator<Quartet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>> combiner() {
+    public BinaryOperator<Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>,Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>> combiner() {
         return null;
     }
 
     @Override
     public Function<
-            Quartet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>,
-            Quartet<Long, Long, Map<String, Long>, List<GetInvestmentsResponse.MonthInvestment>>
+            Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>,
+            Quintet<Long, Long, Map<String, Long>, Map<String, Long>, List<GetInvestmentsResponse.MonthInvestment>>
             > finisher() {
-        return (investmentSummaryQuartet) -> new Quartet<>(
-                investmentSummaryQuartet.getValue0().getValue(),
-                investmentSummaryQuartet.getValue1().getValue1().getValue(),
-                investmentSummaryQuartet.getValue2(),
-                new ArrayList(investmentSummaryQuartet.getValue3().values())
+        return (investmentSummaryQuintet) -> new Quintet<>(
+                investmentSummaryQuintet.getValue0().getValue(),
+                investmentSummaryQuintet.getValue1().getValue1().getValue(),
+                investmentSummaryQuintet.getValue2(),
+                investmentSummaryQuintet.getValue3(),
+                new ArrayList(investmentSummaryQuintet.getValue4().values())
         );
     }
 
@@ -96,8 +105,6 @@ public class MonthInvestmentCollector implements
     public Set<Characteristics> characteristics() {
         return Collections.emptySet();
     }
-
-
 }
 
 @Data

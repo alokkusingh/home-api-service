@@ -50,8 +50,9 @@ public class InvestmentService {
                         monthInvestmentSummary -> GetInvestmentsResponse.builder()
                                 .investmentAmount(monthInvestmentSummary.getValue0())
                                 .asOnValue(monthInvestmentSummary.getValue1())
-                                .monthInvestments(monthInvestmentSummary.getValue3())
+                                .monthInvestments(monthInvestmentSummary.getValue4())
                                 .investmentsByType(monthInvestmentSummary.getValue2())
+                                .investmentsValueByType(monthInvestmentSummary.getValue3())
                                 .build()
                 ));
     }
