@@ -60,4 +60,15 @@ public class InvestmentController {
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
                 .body(investmentService.getMonthInvestments(yearMonth));
     }
+
+    @LogExecutionTime
+    @GetMapping(value = "/head/{head}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Investment>> getHeadInvestments(
+            @PathVariable(value = "head") String head
+    ) {
+
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
+                .body(investmentService.getHeadInvestments(head));
+    }
 }

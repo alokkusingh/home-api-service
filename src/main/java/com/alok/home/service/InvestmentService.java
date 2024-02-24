@@ -231,6 +231,21 @@ public class InvestmentService {
         return investmentRepository.findAllByYearMonth(yearMonth.getYear(), yearMonth.getMonth().getValue());
     }
 
+    public List<Investment> getHeadInvestments(String head) {
+
+        List<Investment> investments;
+        if (head == null || head.equalsIgnoreCase("total")) {
+            investments = investmentRepository.findAll();
+        } else {
+            investments = investmentRepository.findAllByHead(head);
+        }
+
+        return investments.stream()
+                .filter(investmentRecord -> investmentRecord.getContribution() != null && investmentRecord.getContribution() > 0)
+                .sorted(Comparator.reverseOrder())
+                .toList();
+    }
+
     /**
      * @deprecated (later release, a batter version of the same function available, kept only for reference)
      */
