@@ -116,3 +116,7 @@ home/stack/stmt-req
 "body": ""
 }
 ```
+#### Test Rest API - localhost is excluded in security
+```shell
+curl --location 'http://localhost:8081/home/api/expense/sum_by_year' | jq .
+```

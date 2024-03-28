@@ -100,6 +100,13 @@ public class ExpenseController {
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
                 .body(expenseService.getMonthWiseExpenseSum());
     }
+    @LogExecutionTime
+    @GetMapping(value = "/sum_by_year", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetExpensesMonthSumResponse> getYearWiseExpenseSum() {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
+                .body(expenseService.getYearWiseExpenseSum());
+    }
 
     @LogExecutionTime
     @GetMapping(value = "/current_month_by_day", produces = MediaType.APPLICATION_JSON_VALUE)

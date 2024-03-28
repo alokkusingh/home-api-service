@@ -165,6 +165,15 @@ public class ExpenseService {
         }
     }
 
+    public GetExpensesMonthSumResponse getYearWiseExpenseSum() {
+        List<IExpenseMonthSum> expenseSums = expenseRepository.findSumGroupByYear();
+
+        return GetExpensesMonthSumResponse.builder()
+                .expenseCategorySums(expenseSums)
+                .count(expenseSums.size())
+                .build();
+    }
+
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "{ #root.methodName, #category }")
     public GetExpensesResponse getExpensesForCategory(String category) {
         log.info("Expenses for Category not available in cache");
