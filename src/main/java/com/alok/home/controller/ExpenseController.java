@@ -93,6 +93,15 @@ public class ExpenseController {
                 .body(expenseService.getMonthWiseExpenseCategorySum());
     }
 
+
+    @LogExecutionTime
+    @GetMapping(value = "/sum_by_category_year", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GetExpensesMonthSumByCategoryResponse> getYearWiseExpenseCategorySum() {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
+                .body(expenseService.getYaerWiseExpenseCategorySum());
+    }
+
     @LogExecutionTime
     @GetMapping(value = "/sum_by_month", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<GetExpensesMonthSumResponse> getMonthWiseExpenseSum() {

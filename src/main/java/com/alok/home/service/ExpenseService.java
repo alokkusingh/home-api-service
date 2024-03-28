@@ -123,6 +123,22 @@ public class ExpenseService {
                 .build();
     }
 
+    public GetExpensesMonthSumByCategoryResponse getYaerWiseExpenseCategorySum() {
+        List<IExpenseCategoryMonthSum> expenseCategorySums = expenseRepository.findCategorySumGroupByYear();
+
+        return GetExpensesMonthSumByCategoryResponse.builder()
+                .expenseCategorySums(expenseCategorySums.stream().map(
+                        expMetricSum -> GetExpensesMonthSumByCategoryResponse.ExpenseCategoryMonthSum.builder()
+                                .year(expMetricSum.getYearx())
+                                .month(expMetricSum.getMonthx())
+                                .category(expMetricSum.getCategory())
+                                .sum(expMetricSum.getSum())
+                                .build()
+                ).toList())
+                .count(expenseCategorySums.size())
+                .build();
+    }
+
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "{ #root.methodName, #category }")
     public GetExpensesMonthSumByCategoryResponse getMonthlyExpenseForCategory(String category) {
         log.info("Monthly was expense for category not available in cache");
