@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>com.alok.home</groupId>
 			<artifactId>home-commons</artifactId>
-			<version>1.14.0</version>
+			<version>1.14.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.alok.mqtt</groupId>
@@ -137,9 +137,9 @@ Note: "github" repository definition is present in setting.xml
 -->
 	<distributionManagement>
 		<repository>
-			<id>mqtt-proxy</id>
+			<id>2-github</id>
 			<name>GitHub Packages</name>
-			<url>https://maven.pkg.github.com/alokkusingh/mqtt-proxy</url>
+			<url>https://maven.pkg.github.com/alokkusingh/mvn-repo</url>
 		</repository>
 	</distributionManagement>
 
