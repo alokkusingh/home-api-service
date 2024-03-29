@@ -116,6 +116,16 @@ public class OdionService {
                             .toList()
                     );
                 }
+                if (head == OdionTransaction.AccountHead.JYOTHI) {
+                    headAccountBalances.get(head).addAll(
+                        accountBalances.stream()
+                            .filter(accountBalance -> accountBalance.getAccount() == OdionTransaction.Account.JYOTHI
+                                    || accountBalance.getAccount() == OdionTransaction.Account.INTEREST_JYOTHI
+                                    || accountBalance.getAccount() == OdionTransaction.Account.MISC_JYOTHI)
+                            .sorted(Comparator.comparing(GetOdionAccountsBalanceResponse.AccountBalance::getBalance))
+                            .toList()
+                    );
+                }
             }
         );
 

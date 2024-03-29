@@ -126,3 +126,6 @@ curl --location 'http://localhost:8081/home/api/expense/sum_by_category_month' |
 ```shell
 curl --location 'http://localhost:8081/home/api/expense/sum_by_category_year' | jq .
 ```
+```shell
+curl --location 'http://localhost:8081/home/api/odion/accounts' | jq .
+```
