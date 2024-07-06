@@ -19,6 +19,7 @@ public class GetInvestmentsRorMetricsResponse {
         private InvestmentsReturn NPS;
         private InvestmentsReturn LIC;
         private InvestmentsReturn SHARE;
+        private InvestmentsReturn MF;
         private InvestmentsReturn total;
 
 
