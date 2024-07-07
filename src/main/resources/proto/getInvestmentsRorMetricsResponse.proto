@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option java_package = "com.alok.home.response.proto";
+package interface.grpc.servicer;
+
+message GetInvestmentsRorMetricsResponse {
+  repeated InvestmentsRorMetric investmentsRorMetrics = 1;
+}
+
+message InvestmentsRorMetric {
+  string metric = 1;
+  InvestmentsReturn pf = 2;
+  InvestmentsReturn nps = 3;
+  InvestmentsReturn lic = 4;
+  InvestmentsReturn share = 5;
+  InvestmentsReturn mf = 6;
+  InvestmentsReturn total = 7;
+}
+
+message InvestmentsReturn {
+  int32 beg = 1;
+  int32 end = 2;
+  int32 inv = 3;
+  double ror = 4;
+}

@@ -12,6 +12,11 @@ GraalVM CE 22.3.0 ARMx64 builder image
    ```
 ### Build Application image
    ```shell
+   protoc --proto_path=src --java_out=src/main/java src/main/resources/proto/getInvestmentsResponse.proto
+   protoc --proto_path=src --java_out=src/main/java src/main/resources/proto/getInvestmentsRorMetricsResponse.proto
+   protoc --proto_path=src --java_out=src/main/java src/main/resources/proto/getRawInvestmentsResponse.proto
+   ```
+   ```shell
    docker build --progress=plain -f Dockerfile.native -t alokkusingh/home-api-service:latest -t alokkusingh/home-api-service:1.0.0 .
    ```
    ```shell

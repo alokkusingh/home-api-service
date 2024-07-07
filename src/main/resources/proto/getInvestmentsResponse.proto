@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option java_package = "com.alok.home.response.proto";
+package interface.grpc.servicer;
+
+message GetInvestmentsResponse {
+  int64 investmentAmount = 1;
+  int64 asOnValue = 2;
+  map<string, int64> investmentsByType = 3;
+  map<string, int64> investmentsValueByType = 4;
+  repeated MonthInvestment monthInvestments = 5;
+}
+
+message MonthInvestment {
+  string yearMonth = 1;
+  int64 investmentAmount = 2;
+  int64 asOnInvestment = 3;
+  int64 asOnValue = 4;
+  repeated Investment investments = 5;
+}
+
+message Investment {
+  string head = 1;
+  int64 investmentAmount = 2;
+  int64 asOnInvestment = 3;
+  int64 asOnValue = 4;
+}

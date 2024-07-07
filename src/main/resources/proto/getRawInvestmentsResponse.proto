@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option java_package = "com.alok.home.response.proto";
+package interface.grpc.servicer;
+
+message GetRawInvestmentsResponse {
+  repeated Investment investments = 1;
+}
+
+message Investment {
+  int32 id = 1;
+  int32 yearx = 2;
+  int32 monthx = 3;
+  string head = 4;
+  int64 contribution = 5;
+  int64 valueAsOnMonth = 6;
+  int64 contributionAsOnMonth = 7;
+}

@@ -77,6 +77,34 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java-util</artifactId>
+			<version>3.25.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>3.25.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.10.2</version>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.googlecode.protobuf-java-format</groupId>-->
+<!--			<artifactId>protobuf-java-format</artifactId>-->
+<!--			<version>1.4</version>-->
+<!--		</dependency>-->
+<!--		&lt;!&ndash; https://mvnrepository.com/artifact/com.github.wcy123/protobuf-http-message-converter &ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>com.github.wcy123</groupId>-->
+<!--			<artifactId>protobuf-http-message-converter</artifactId>-->
+<!--			<version>2.1.0</version>-->
+<!--		</dependency>-->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -129,6 +157,35 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
+			<!-- compile proto file into java files. -->
+<!--			<plugin>-->
+<!--				<groupId>com.github.os72</groupId>-->
+<!--				<artifactId>protoc-jar-maven-plugin</artifactId>-->
+<!--				<version>3.6.0.1</version>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<phase>generate-sources</phase>-->
+<!--						<goals>-->
+<!--							<goal>run</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<includeMavenTypes>direct</includeMavenTypes>-->
+
+<!--							<inputDirectories>-->
+<!--								<include>src/main/resources/proto</include>-->
+<!--							</inputDirectories>-->
+
+<!--							<outputTargets>-->
+<!--								<outputTarget>-->
+<!--									<type>java</type>-->
+<!--									<outputDirectory>src/main/java</outputDirectory>-->
+<!--								</outputTarget>-->
+<!--							</outputTargets>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
 		</plugins>
 	</build>
 
