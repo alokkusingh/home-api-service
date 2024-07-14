@@ -281,7 +281,7 @@ public class InvestmentService {
         Map<Short, List<Investment>> investmentByYear = investments.stream()
                 .sorted()
                 .filter(investment -> investment.getValueAsOnMonth() != null && investment.getValueAsOnMonth() > 0) // start month
-                .filter(investment -> YearMonth.of(investment.getYearx(), investment.getMonthx()).isBefore(YearMonth.now())) // end month
+                .filter(investment -> YearMonth.of(investment.getYearx(), investment.getMonthx()).isBefore(YearMonth.now().plusMonths(1))) // end month
                 .collect(Collectors.groupingBy(Investment::getYearx));
 
         List<Short> years = investmentByYear.keySet().stream().sorted().toList();
