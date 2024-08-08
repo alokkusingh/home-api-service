@@ -157,7 +157,7 @@ public class InvestmentService {
             return total;
         });
         GetInvestmentsRorMetricsResponse.InvestmentsRorMetric curMonth = GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.builder()
-                .metric("Current Month (%)")
+                .metric("RoR - " + YearMonth.now().getMonth())
                 .PF(
                         GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
                                 .beg(currentMinusOneMonthPF.getValueAsOnMonth())
@@ -223,7 +223,7 @@ public class InvestmentService {
             return total;
         });
         GetInvestmentsRorMetricsResponse.InvestmentsRorMetric prevMonth = GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.builder()
-                .metric("Previous Month (%)")
+                .metric("RoR - " + YearMonth.now().minusMonths(1).getMonth())
                 .PF(
                         GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
                                 .beg(currentMinusTwoMonthPF.getValueAsOnMonth())
