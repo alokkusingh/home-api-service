@@ -1,5 +1,7 @@
 package com.alok.home.config;
 
+import com.alok.home.commons.exception.InvalidTokenException;
+import com.alok.home.commons.exception.UserNotAuthenticatedException;
 import com.alok.home.model.CustomUserDetails;
 import com.alok.home.model.UserInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -130,9 +133,9 @@ public class SecurityConfig {
                 UserInfo userInfo;
                 try {
                     Response authResponse = client.newCall(authRequest).execute();
-                    if (authResponse == null || !authResponse.isSuccessful()) {
-                        filterChain.doFilter(request, response);
-                        log.error("Token Validation Failed");
+                    if (!authResponse.isSuccessful()) {
+                        log.error("Auh Service return code: {}", authResponse.code());
+                        response.setStatus(HttpStatus.UNAUTHORIZED.value());
                         return;
                     }
 
@@ -141,7 +144,8 @@ public class SecurityConfig {
                 } catch (RuntimeException | ConnectException rte) {
                     rte.printStackTrace();
                     log.error("Error: Auth APi call failed");
-                    throw rte;
+                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                    return;
                 }
 
                 UserDetails userDetails = new CustomUserDetails(userInfo);
