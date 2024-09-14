@@ -2,6 +2,11 @@
 Home Stack API Service
 
 ## Build
+### Set JAVA_HOME (in case mvn run through terminal)
+```shell
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home
+export PATH=$JAVA_HOME/bin:$PATH
+```
 ### Build Application image
    ```shell
    protoc --proto_path=src --java_out=src/main/java src/main/resources/proto/getInvestmentsResponse.proto
@@ -9,13 +14,13 @@ Home Stack API Service
    protoc --proto_path=src --java_out=src/main/java src/main/resources/proto/getRawInvestmentsResponse.proto
    ```
    ```shell
-   docker build --progress=plain -f Dockerfile.native -t alokkusingh/home-api-service:latest -t alokkusingh/home-api-service:1.0.0 .
+   docker build --progress=plain -f Dockerfile.native -t alokkusingh/home-api-service:latest -t alokkusingh/home-api-service:2.0.0 .
    ```
    ```shell
    docker push alokkusingh/home-api-service:latest
    ```
    ```shell
-   docker push alokkusingh/home-api-service:1.0.0
+   docker push alokkusingh/home-api-service:2.0.0
    ```
    ```shell
    docker run -d -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service
