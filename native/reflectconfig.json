@@ -28,13 +28,7 @@
     "allDeclaredMethods": true
   },
   {
-    "name" : "com.alok.home.model.UserInfo",
-    "allDeclaredFields": true,
-    "allDeclaredConstructors": true,
-    "allDeclaredMethods": true
-  },
-  {
-    "name" : "com.alok.home.model.UserRole",
+    "name" : "com.alok.home.commons.security.entity.UserInfo",
     "allDeclaredFields": true,
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true

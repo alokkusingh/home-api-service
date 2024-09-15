@@ -1,7 +1,7 @@
 package com.alok.home.controller;
 
-import com.alok.home.commons.annotation.LogExecutionTime;
-import com.alok.home.commons.model.Investment;
+import com.alok.home.commons.entity.Investment;
+import com.alok.home.commons.utils.annotation.LogExecutionTime;
 import com.alok.home.response.GetInvestmentsResponse;
 import com.alok.home.response.GetInvestmentsRorMetricsResponse;
 import com.alok.home.response.GetRawInvestmentsResponse;

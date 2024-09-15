@@ -1,6 +1,6 @@
 package com.alok.home.stream;
 
-import com.alok.home.commons.model.Investment;
+import com.alok.home.commons.entity.Investment;
 import com.alok.home.response.GetInvestmentsResponse;
 
 import java.time.YearMonth;

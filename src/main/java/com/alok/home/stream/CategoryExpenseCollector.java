@@ -1,6 +1,6 @@
 package com.alok.home.stream;
 
-import com.alok.home.commons.model.Expense;
+import com.alok.home.commons.entity.Expense;
 import com.alok.home.response.GetExpensesResponseAggByDay;
 import com.alok.home.commons.utils.DateUtils;
 

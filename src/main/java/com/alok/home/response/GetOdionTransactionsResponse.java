@@ -1,6 +1,6 @@
 package com.alok.home.response;
 
-import com.alok.home.commons.model.OdionTransaction;
+import com.alok.home.commons.entity.OdionTransaction;
 import lombok.Builder;
 import lombok.Data;
 

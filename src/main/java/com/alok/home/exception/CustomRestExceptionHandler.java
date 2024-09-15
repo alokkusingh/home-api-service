@@ -1,6 +1,6 @@
 package com.alok.home.exception;
 
-import com.alok.home.commons.exception.GlobalRestExceptionHandler;
+import com.alok.home.commons.dto.exception.GlobalRestExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice

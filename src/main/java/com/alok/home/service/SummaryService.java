@@ -1,12 +1,12 @@
 package com.alok.home.service;
 
 import com.alok.home.commons.constant.InvestmentType;
-import com.alok.home.commons.model.TaxMonthly;
+import com.alok.home.commons.entity.IExpenseMonthSum;
+import com.alok.home.commons.entity.Investment;
+import com.alok.home.commons.entity.Transaction;
+import com.alok.home.commons.entity.TaxMonthly;
 import com.alok.home.commons.repository.TaxMonthlyRepository;
 import com.alok.home.config.CacheConfig;
-import com.alok.home.commons.model.IExpenseMonthSum;
-import com.alok.home.commons.model.Investment;
-import com.alok.home.commons.model.Transaction;
 import com.alok.home.commons.repository.ExpenseRepository;
 import com.alok.home.commons.repository.InvestmentRepository;
 import com.alok.home.commons.repository.TransactionRepository;

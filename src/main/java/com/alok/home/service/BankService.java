@@ -1,7 +1,7 @@
 package com.alok.home.service;
 
-import com.alok.home.commons.exception.ResourceNotFoundException;
-import com.alok.home.commons.model.Transaction;
+import com.alok.home.commons.dto.exception.ResourceNotFoundException;
+import com.alok.home.commons.entity.Transaction;
 import com.alok.home.commons.repository.TransactionRepository;
 import com.alok.home.config.CacheConfig;
 import com.alok.home.response.GetSalaryByCompanyResponse;

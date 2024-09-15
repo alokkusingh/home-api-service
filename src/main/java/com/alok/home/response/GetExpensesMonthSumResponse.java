@@ -1,6 +1,6 @@
 package com.alok.home.response;
 
-import com.alok.home.commons.model.IExpenseMonthSum;
+import com.alok.home.commons.entity.IExpenseMonthSum;
 import lombok.Builder;
 import lombok.Data;
 

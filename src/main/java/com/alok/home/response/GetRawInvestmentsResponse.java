@@ -1,6 +1,6 @@
 package com.alok.home.response;
 
-import com.alok.home.commons.model.Investment;
+import com.alok.home.commons.entity.Investment;
 import lombok.Builder;
 import lombok.Data;
 

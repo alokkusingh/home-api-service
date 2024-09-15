@@ -1,11 +1,11 @@
 package com.alok.home.service;
 
-import com.alok.home.commons.model.Expense;
-import com.alok.home.commons.model.YearMonth;
+import com.alok.home.commons.entity.Expense;
+import com.alok.home.commons.entity.IExpenseCategoryMonthSum;
+import com.alok.home.commons.entity.IExpenseMonthSum;
+import com.alok.home.commons.entity.YearMonth;
 import com.alok.home.commons.utils.DateUtils;
 import com.alok.home.config.CacheConfig;
-import com.alok.home.commons.model.IExpenseCategoryMonthSum;
-import com.alok.home.commons.model.IExpenseMonthSum;
 import com.alok.home.commons.repository.ExpenseRepository;
 import com.alok.home.response.GetExpensesMonthSumByCategoryResponse;
 import com.alok.home.response.GetExpensesMonthSumResponse;

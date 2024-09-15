@@ -1,7 +1,7 @@
 package com.alok.home.controller;
 
-import com.alok.home.commons.annotation.LogExecutionTime;
-import com.alok.home.commons.model.OdionTransaction;
+import com.alok.home.commons.entity.OdionTransaction;
+import com.alok.home.commons.utils.annotation.LogExecutionTime;
 import com.alok.home.response.GetOdionAccountTransactionsResponse;
 import com.alok.home.response.GetOdionAccountsBalanceResponse;
 import com.alok.home.response.GetOdionMonthlyAccountTransactionResponse;

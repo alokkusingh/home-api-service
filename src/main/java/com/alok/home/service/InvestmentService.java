@@ -1,6 +1,6 @@
 package com.alok.home.service;
 
-import com.alok.home.commons.model.Investment;
+import com.alok.home.commons.entity.Investment;
 import com.alok.home.commons.repository.InvestmentRepository;
 import com.alok.home.response.GetInvestmentsResponse;
 import com.alok.home.response.GetInvestmentsRorMetricsResponse;

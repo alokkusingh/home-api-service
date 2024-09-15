@@ -23,7 +23,7 @@ export PATH=$JAVA_HOME/bin:$PATH
    docker push alokkusingh/home-api-service:2.0.0
    ```
    ```shell
-   docker run -d -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service
+   docker run -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service
    ```
 ### Manual commands - go inside and run binary manually
 ```shell

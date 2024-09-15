@@ -1,7 +1,6 @@
 package com.alok.home.controller;
 
-import com.alok.home.commons.annotation.LogExecutionTime;
-import com.alok.home.commons.model.YearMonth;
+import com.alok.home.commons.utils.annotation.LogExecutionTime;
 import com.alok.home.response.*;
 import com.alok.home.service.ExpenseService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -70,7 +68,7 @@ public class ExpenseController {
 
     @LogExecutionTime
     @GetMapping(value = "/months", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<YearMonth>> getExpenseMonths() {
+    public ResponseEntity<List<com.alok.home.commons.entity.YearMonth>> getExpenseMonths() {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
                 .body(expenseService.getExpenseMonths());

@@ -1,6 +1,6 @@
 package com.alok.home.stream;
 
-import com.alok.home.commons.model.OdionTransaction;
+import com.alok.home.commons.entity.OdionTransaction;
 import org.javatuples.Pair;
 
 import java.util.*;

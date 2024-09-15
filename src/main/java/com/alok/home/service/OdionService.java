@@ -1,6 +1,6 @@
 package com.alok.home.service;
 
-import com.alok.home.commons.model.OdionTransaction;
+import com.alok.home.commons.entity.OdionTransaction;
 import com.alok.home.commons.repository.OdionTransactionRepository;
 import com.alok.home.response.GetOdionAccountTransactionsResponse;
 import com.alok.home.response.GetOdionAccountsBalanceResponse;

@@ -1,6 +1,6 @@
 package com.alok.home.service;
 
-import com.alok.home.commons.model.Tax;
+import com.alok.home.commons.entity.Tax;
 import com.alok.home.commons.repository.TaxRepository;
 import com.alok.home.response.GetTaxesResponse;
 import lombok.extern.slf4j.Slf4j;
