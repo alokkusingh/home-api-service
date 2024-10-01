@@ -139,7 +139,8 @@ public class SummaryService {
         Map<String, Long> investmentByCompanyMonthly = investments.stream()
                 .filter(investment -> !(
                         InvestmentType.LIC.name().equals(investment.getHead()) ||
-                        InvestmentType.SHARE.name().equals(investment.getHead())
+                                InvestmentType.SHARE.name().equals(investment.getHead()) ||
+                                InvestmentType.MF.name().equals(investment.getHead())
                         )
                 )
                 .collect(
@@ -187,6 +188,9 @@ public class SummaryService {
                                 )
                                 .investmentAmount(
                                         investmentMonthly.get(String.format("%d-%02d", expenseMonthRecord.getYearx(), expenseMonthRecord.getMonthx()))
+                                )
+                                .investmentByCompany(
+                                        investmentByCompanyMonthly.get(String.format("%d-%02d", expenseMonthRecord.getYearx(), expenseMonthRecord.getMonthx()))
                                 )
                                 .taxAmount(
                                         taxMonthly.get(String.format("%d-%02d", expenseMonthRecord.getYearx(), expenseMonthRecord.getMonthx()))

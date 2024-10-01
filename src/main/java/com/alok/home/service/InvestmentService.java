@@ -72,6 +72,7 @@ public class InvestmentService {
         List<Investment> currentMonthInvestments = investmentRepository.findAllByYearMonth(YearMonth.now().getYear(), YearMonth.now().getMonthValue());
         List<Investment> currentMonthMinusOneInvestments = investmentRepository.findAllByYearMonth(YearMonth.now().minusMonths(1).getYear(), YearMonth.now().minusMonths(1).getMonthValue());
         List<Investment> currentMonthMinusTwoInvestments = investmentRepository.findAllByYearMonth(YearMonth.now().minusMonths(2).getYear(), YearMonth.now().minusMonths(2).getMonthValue());
+        List<Investment> currentMonthMinusThreeInvestments = investmentRepository.findAllByYearMonth(YearMonth.now().minusMonths(3).getYear(), YearMonth.now().minusMonths(3).getMonthValue());
 
         Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> pfYearlyRor = getXirrByYear(pfInvestments);
         Map<Short, GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> npsYearlyRor = getXirrByYear(npsInvestments);
@@ -157,7 +158,7 @@ public class InvestmentService {
             return total;
         });
         GetInvestmentsRorMetricsResponse.InvestmentsRorMetric curMonth = GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.builder()
-                .metric("RoR - " + YearMonth.now().getMonth())
+                .metric("RoR - " + YearMonth.now().getMonth().name().substring(0,3))
                 .PF(
                         GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
                                 .beg(currentMinusOneMonthPF.getValueAsOnMonth())
@@ -223,7 +224,7 @@ public class InvestmentService {
             return total;
         });
         GetInvestmentsRorMetricsResponse.InvestmentsRorMetric prevMonth = GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.builder()
-                .metric("RoR - " + YearMonth.now().minusMonths(1).getMonth())
+                .metric("RoR - " + YearMonth.now().minusMonths(1).getMonth().name().substring(0,3))
                 .PF(
                         GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
                                 .beg(currentMinusTwoMonthPF.getValueAsOnMonth())
@@ -270,11 +271,77 @@ public class InvestmentService {
                         .build())
                 .build();
 
+        // TODO: Last to Last Month
+        Investment currentMinusThreeMonthPF = currentMonthMinusThreeInvestments.stream().filter(investment -> investment.getHead().equals("PF")).findFirst().get();
+        Investment currentMinusThreeMonthNPS = currentMonthMinusThreeInvestments.stream().filter(investment -> investment.getHead().equals("NPS")).findFirst().get();
+        Investment currentMinusThreeMonthLIC = currentMonthMinusThreeInvestments.stream().filter(investment -> investment.getHead().equals("LIC")).findFirst().get();
+        Investment currentMinusThreeMonthShare = currentMonthMinusThreeInvestments.stream().filter(investment -> investment.getHead().equals("SHARE")).findFirst().get();
+        Investment currentMinusThreeMonthMF = currentMonthMinusThreeInvestments.stream().filter(investment -> investment.getHead().equals("MF")).findFirst().get();
+        Investment currentMinusThreeMonthAll = currentMonthMinusThreeInvestments.stream().reduce(Investment.builder()
+                .contribution(0)
+                .contributionAsOnMonth(0)
+                .valueAsOnMonth(0)
+                .contribution(0)
+                .build(), (total, element) -> {
+            total.setContribution(total.getContribution() + element.getContribution());
+            total.setContributionAsOnMonth(total.getContributionAsOnMonth() + element.getContributionAsOnMonth());
+            total.setValueAsOnMonth(total.getValueAsOnMonth() + element.getValueAsOnMonth());
+            return total;
+        });
+        GetInvestmentsRorMetricsResponse.InvestmentsRorMetric prevToPrevMonth = GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.builder()
+                .metric("RoR - " + YearMonth.now().minusMonths(2).getMonth().name().substring(0,3))
+                .PF(
+                        GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
+                                .beg(currentMinusThreeMonthPF.getValueAsOnMonth())
+                                .inv(currentMinusTwoMonthPF.getContribution())
+                                .end(currentMinusTwoMonthPF.getValueAsOnMonth())
+                                //.ror(getXirrForAMonth(List.of(currentMinusOneMonthPF), currentMinusTwoMonthPF.getValueAsOnMonth(), currentMinusOneMonthPF.getValueAsOnMonth()))
+                                .ror(getRorForMonth(currentMinusTwoMonthPF, currentMinusThreeMonthPF.getValueAsOnMonth()))
+                                .build()
+                )
+                .NPS(
+                        GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
+                                .beg(currentMinusThreeMonthNPS.getValueAsOnMonth())
+                                .inv(currentMinusTwoMonthNPS.getContribution())
+                                .end(currentMinusTwoMonthNPS.getValueAsOnMonth())
+                                //.ror(getXirrForAMonth(List.of(currentMinusOneMonthNPS), currentMinusTwoMonthNPS.getValueAsOnMonth(), currentMinusOneMonthNPS.getValueAsOnMonth()))
+                                .ror(getRorForMonth(currentMinusTwoMonthNPS, currentMinusThreeMonthNPS.getValueAsOnMonth()))
+                                .build())
+                .LIC(                        GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
+                        .beg(currentMinusThreeMonthLIC.getValueAsOnMonth())
+                        .inv(currentMinusTwoMonthLIC.getContribution())
+                        .end(currentMinusTwoMonthLIC.getValueAsOnMonth())
+                        //.ror(getXirrForAMonth(List.of(currentMinusOneMonthLIC), currentMinusTwoMonthLIC.getValueAsOnMonth(), currentMinusOneMonthLIC.getValueAsOnMonth()))
+                        .ror(getRorForMonth(currentMinusTwoMonthLIC, currentMinusThreeMonthLIC.getValueAsOnMonth()))
+                        .build())
+                .SHARE(                        GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
+                        .beg(currentMinusThreeMonthShare.getValueAsOnMonth())
+                        .inv(currentMinusTwoMonthShare.getContribution())
+                        .end(currentMinusTwoMonthShare.getValueAsOnMonth())
+                        //.ror(getXirrForAMonth(List.of(currentMinusOneMonthShare), currentMinusTwoMonthShare.getValueAsOnMonth(), currentMinusOneMonthShare.getValueAsOnMonth()))
+                        .ror(getRorForMonth(currentMinusTwoMonthShare, currentMinusThreeMonthShare.getValueAsOnMonth()))
+                        .build())
+                .MF(                        GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
+                        .beg(currentMinusThreeMonthMF.getValueAsOnMonth())
+                        .inv(currentMinusTwoMonthMF.getContribution())
+                        .end(currentMinusTwoMonthMF.getValueAsOnMonth())
+                        //.ror(getXirrForAMonth(List.of(currentMinusOneMonthMF), currentMinusTwoMonthMF.getValueAsOnMonth(), currentMinusOneMonthMF.getValueAsOnMonth()))
+                        .ror(getRorForMonth(currentMinusTwoMonthMF, currentMinusThreeMonthMF.getValueAsOnMonth()))
+                        .build())
+                .total(GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
+                        .beg(currentMinusThreeMonthAll.getValueAsOnMonth())
+                        .inv(currentMinusTwoMonthAll.getContribution())
+                        .end(currentMinusTwoMonthAll.getValueAsOnMonth())
+                        .ror(getRorForMonth(currentMinusTwoMonthAll, currentMinusThreeMonthAll.getValueAsOnMonth()))
+                        .build())
+                .build();
+
         List<GetInvestmentsRorMetricsResponse.InvestmentsRorMetric> yearRorMetrics = new ArrayList<>();
         yearRorMetrics.add(cr);
         yearRorMetrics.add(ar);
         yearRorMetrics.add(curMonth);
         yearRorMetrics.add(prevMonth);
+        yearRorMetrics.add(prevToPrevMonth);
         pfYearlyRor.keySet().stream().sorted(Comparator.reverseOrder()).forEach(
                 year -> yearRorMetrics.add(GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.builder()
                             .metric("RoR - " + year)
