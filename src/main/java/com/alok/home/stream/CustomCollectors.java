@@ -2,6 +2,8 @@ package com.alok.home.stream;
 
 public class CustomCollectors {
 
+    private CustomCollectors() {}
+
     public static CategoryExpenseCollector toCategoryExpenseList() {
         return new CategoryExpenseCollector();
     }

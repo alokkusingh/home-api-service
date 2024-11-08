@@ -20,6 +20,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -419,9 +420,11 @@ public class InvestmentService {
                     .map(Investment::getValueAsOnMonth)
                     .toList().get(accumulatedInvestmentByYear.get(year).size()-1);
 
-            Integer totalContribution = accumulatedInvestmentByYear.get(year).stream()
+            int totalContribution = accumulatedInvestmentByYear.get(year).stream()
                     .map(Investment::getContribution)
-                    .reduce(0, Integer::sum);
+                    .mapToInt(x -> x)
+                    .sum();
+                    //.reduce(Function.identity(), Integer::sum);
 
             //investmentRorByYear.put(year, getRorForYear(investmentByYear.get(year), prevYearClosingValue));
             investmentRorByYear.put(year, getInvestmentSummary(investmentByYear.get(year), prevYearClosingValue, thisYearClosingBalance, totalContribution));
@@ -553,7 +556,8 @@ public class InvestmentService {
                 .ror(BigDecimal.valueOf(
                         yeralyRor.values().stream()
                                 .map(GetInvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn::getRor)
-                                .reduce(0.0, Double::sum)).setScale(2, RoundingMode.HALF_UP).doubleValue()
+                                .reduce(0.0, Double::sum))
+                        .setScale(2, RoundingMode.HALF_UP).doubleValue()
                 )
                 .build();
     }
@@ -594,12 +598,11 @@ public class InvestmentService {
 
     public List<Investment> getHeadInvestments(String head) {
 
-        List<Investment> investments;
-        if (head == null || head.equalsIgnoreCase("total")) {
-            investments = investmentRepository.findAll();
-        } else {
-            investments = investmentRepository.findAllByHead(head);
-        }
+        List<Investment> investments = switch(head) {
+            case null -> investmentRepository.findAll();
+            case "total" -> investmentRepository.findAll();
+            default -> investmentRepository.findAllByHead(head);
+        };
 
         return investments.stream()
                 //.filter(investmentRecord -> investmentRecord.getContribution() != null && investmentRecord.getContribution() > 0)
