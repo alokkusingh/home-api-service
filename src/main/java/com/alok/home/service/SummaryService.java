@@ -43,6 +43,29 @@ public class SummaryService {
         List<IExpenseMonthSum> expenseSums = expenseRepository.findSumGroupByMonth();
         List<Transaction> transactions = transactionRepository.findAll();
         List<Investment> investments = investmentRepository.findAll();
+
+        // for company investment the amount is collected in previous month
+        // but the sheet contains month as on investment done
+        // so, invest perspective month should be current month
+        // but salary perspective month should be previous month
+        investments.stream()
+                .filter(investment -> !(
+                        InvestmentType.LIC.name().equals(investment.getHead()) ||
+                            InvestmentType.SHARE.name().equals(investment.getHead()) ||
+                            InvestmentType.MF.name().equals(investment.getHead())
+                    )
+                )
+                .forEach(investment -> {
+                    if (investment.getMonthx() == 1) {
+                        investment.setYearx((short) (investment.getYearx() - 1));
+                    }
+                    if (investment.getMonthx() == 1) {
+                        investment.setMonthx((short) 12);
+                    } else {
+                        investment.setMonthx((short) (investment.getMonthx() - 1));
+                    }
+                });
+
         var taxes = taxMonthlyRepository.findAll();
 
         // From June 2007 June to May 2019 don't have expense entry - so lets add 0 every month later the

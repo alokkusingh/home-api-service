@@ -10,12 +10,15 @@ spring:
                     time_zone: UTC
     profiles:
         active: devmysql
+    lifecycle:
+      timeout-per-shutdown-phase: 1m
 server:
     servlet:
         context-path: /home/api
     compression:
       enabled: true
       min-response-size: 2KB
+    shutdown: graceful
 
 web:
     cache-control:
