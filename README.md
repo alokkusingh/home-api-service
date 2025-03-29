@@ -30,14 +30,14 @@ export PATH=$JAVA_HOME/bin:$PATH
 docker run -it --entrypoint /bin/bash -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service
 ```
 ```shell
-.\home-api-service --java.security.egd=file:/dev/urandom --spring.profiles.active=prod --spring.datasource.url=jdbc:mysql://192.168.1.200:32306/home-stack \
+./home-api-service --java.security.egd=file:/dev/urandom --spring.profiles.active=prod --spring.datasource.url=jdbc:mysql://192.168.1.200:32306/home-stack \
 --spring.datasource.hikari.minimum-idle=5 --spring.datasource.hikari.connection-timeout=20000 --spring.datasource.hikari.maximum-pool-size=10 \
---spring.datasource.hikari.idle-timeout=10000 --pring.datasource.hikari.max-lifetime=1000 --spring.datasource.hikari.auto-commit=true
+--spring.datasource.hikari.idle-timeout=10000 --spring.datasource.hikari.max-lifetime=1000 --spring.datasource.hikari.auto-commit=true
 ```
 ```shell
 docker run -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service --java.security.egd=file:/dev/urandom --spring.profiles.active=prod \
 --spring.datasource.url=jdbc:mysql://192.168.1.200:32306/home-stack --spring.datasource.hikari.minimum-idle=5 --spring.datasource.hikari.connection-timeout=20000 \
---spring.datasource.hikari.maximum-pool-size=10 --spring.datasource.hikari.idle-timeout=10000 --pring.datasource.hikari.max-lifetime=1000 \
+--spring.datasource.hikari.maximum-pool-size=10 --spring.datasource.hikari.idle-timeout=10000 --spring.datasource.hikari.max-lifetime=1000 \
 --spring.datasource.hikari.auto-commit=true
 ```
 

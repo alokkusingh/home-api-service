@@ -52,6 +52,32 @@ public class BankService {
                 .build();
     }
 
+    public GetTransactionsResponse getAllTransactions(String statementFileName) {
+
+        List<Transaction> transactions = transactionRepository.findStatementTransactions(statementFileName);
+        Date lastTransactionDate = transactionRepository.findLastTransactionDate()
+                .orElse(new Date());
+        Collections.sort(transactions, (t1, t2) -> t2.getDate().compareTo(t1.getDate()));
+
+        List<GetTransactionsResponse.Transaction> transactionsList = transactions.stream()
+                .map(transaction -> GetTransactionsResponse.Transaction.builder()
+                        .id(transaction.getId())
+                        .date(transaction.getDate())
+                        .head(transaction.getHead())
+                        .subHead(transaction.getSubHead())
+                        .credit(transaction.getCredit())
+                        .debit(transaction.getDebit())
+                        .bank(transaction.getBank())
+                        .build())
+                .collect(Collectors.toList());
+
+        return GetTransactionsResponse.builder()
+                .transactions(transactionsList)
+                .count(transactionsList.size())
+                .lastTransactionDate(lastTransactionDate)
+                .build();
+    }
+
     @Cacheable(CacheConfig.CacheName.TRANSACTION)
     public GetTransactionResponse getTransaction(Integer id) {
         log.info("Transaction by id not available in cache");

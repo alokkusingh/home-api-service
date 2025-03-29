@@ -1,0 +1,7 @@
+[
+  { "name": "com.alok.home.response.GetTransactionsResponse$Transaction" },
+  { "name": "java.lang.Number" },
+  { "name": "java.util.Date" },
+  { "name": "java.lang.String" },
+  { "name": "java.sql.Date" }
+]

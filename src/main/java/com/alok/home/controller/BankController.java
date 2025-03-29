@@ -28,10 +28,19 @@ public class BankController {
 
     @LogExecutionTime
     @GetMapping(value = "/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetTransactionsResponse> getAllTransactions() {
+    public ResponseEntity<GetTransactionsResponse> getAllTransactions(
+            @RequestParam(value = "statementFileName", required = false) String statementFileName
+    ) {
+        GetTransactionsResponse response;
+        if (statementFileName == null) {
+            response = bankService.getAllTransactions();
+        } else {
+            response = bankService.getAllTransactions(statementFileName);
+        }
+
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
-                .body(bankService.getAllTransactions());
+                .body(response);
     }
 
     @LogExecutionTime
