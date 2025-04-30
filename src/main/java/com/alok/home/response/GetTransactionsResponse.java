@@ -24,5 +24,6 @@ public class GetTransactionsResponse {
         private String head;
         private String subHead;
         private String bank;
+        private String description;
     }
 }

@@ -68,6 +68,7 @@ public class BankService {
                         .credit(transaction.getCredit())
                         .debit(transaction.getDebit())
                         .bank(transaction.getBank())
+                        .description(transaction.getDescription())
                         .build())
                 .collect(Collectors.toList());
 
