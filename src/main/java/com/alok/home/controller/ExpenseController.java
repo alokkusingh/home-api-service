@@ -94,10 +94,12 @@ public class ExpenseController {
 
     @LogExecutionTime
     @GetMapping(value = "/sum_by_category_year", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetExpensesMonthSumByCategoryResponse> getYearWiseExpenseCategorySum() {
+    public ResponseEntity<GetExpensesMonthSumByCategoryResponse> getYearWiseExpenseCategorySum(
+            @RequestParam(value = "year", required = false) Integer year
+    ) {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
-                .body(expenseService.getYaerWiseExpenseCategorySum());
+                .body(expenseService.getYearWiseExpenseCategorySum(year));
     }
 
     @LogExecutionTime

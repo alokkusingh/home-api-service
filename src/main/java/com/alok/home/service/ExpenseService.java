@@ -123,19 +123,22 @@ public class ExpenseService {
                 .build();
     }
 
-    public GetExpensesMonthSumByCategoryResponse getYaerWiseExpenseCategorySum() {
+    public GetExpensesMonthSumByCategoryResponse getYearWiseExpenseCategorySum(Integer year) {
         List<IExpenseCategoryMonthSum> expenseCategorySums = expenseRepository.findCategorySumGroupByYear();
 
-        return GetExpensesMonthSumByCategoryResponse.builder()
-                .expenseCategorySums(expenseCategorySums.stream().map(
+        var records = expenseCategorySums.stream().map(
                         expMetricSum -> GetExpensesMonthSumByCategoryResponse.ExpenseCategoryMonthSum.builder()
                                 .year(expMetricSum.getYearx())
-                                .month(expMetricSum.getMonthx())
                                 .category(expMetricSum.getCategory())
                                 .sum(expMetricSum.getSum())
                                 .build()
-                ).toList())
-                .count(expenseCategorySums.size())
+                )
+                .filter(record -> (year == null) || year.equals(record.getYear()))
+                .toList();
+
+        return GetExpensesMonthSumByCategoryResponse.builder()
+                .expenseCategorySums(records)
+                .count(records.size())
                 .build();
     }
 
