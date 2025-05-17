@@ -1,9 +1,9 @@
 package com.alok.home.controller;
 
 import com.alok.home.commons.utils.annotation.LogExecutionTime;
-import com.alok.home.response.GetSalaryByCompanyResponse;
-import com.alok.home.response.GetTransactionResponse;
-import com.alok.home.response.GetTransactionsResponse;
+import com.alok.home.commons.dto.api.response.SalaryByCompanyResponse;
+import com.alok.home.commons.dto.api.response.TransactionResponse;
+import com.alok.home.commons.dto.api.response.TransactionsResponse;
 import com.alok.home.service.BankService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +28,10 @@ public class BankController {
 
     @LogExecutionTime
     @GetMapping(value = "/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetTransactionsResponse> getAllTransactions(
+    public ResponseEntity<TransactionsResponse> getAllTransactions(
             @RequestParam(value = "statementFileName", required = false) String statementFileName
     ) {
-        GetTransactionsResponse response;
+        TransactionsResponse response;
         if (statementFileName == null) {
             response = bankService.getAllTransactions();
         } else {
@@ -46,7 +46,7 @@ public class BankController {
     @LogExecutionTime
     @CrossOrigin
     @GetMapping(value = "/transactions/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetTransactionResponse> getTransaction(@PathVariable(value = "id") Integer id) {
+    public ResponseEntity<TransactionResponse> getTransaction(@PathVariable(value = "id") Integer id) {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.noCache())
                 .body(bankService.getTransaction(id));
@@ -54,7 +54,7 @@ public class BankController {
 
     @LogExecutionTime
     @GetMapping(value = "/salary/bycompany", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetSalaryByCompanyResponse> getSalaryByCompany() {
+    public ResponseEntity<SalaryByCompanyResponse> getSalaryByCompany() {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
                 .body(bankService.getSalaryByCompany());

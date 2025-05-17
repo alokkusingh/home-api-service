@@ -2,15 +2,14 @@ package com.alok.home.controller;
 
 import com.alok.home.commons.entity.Investment;
 import com.alok.home.commons.utils.annotation.LogExecutionTime;
-import com.alok.home.response.GetInvestmentsResponse;
-import com.alok.home.response.GetInvestmentsRorMetricsResponse;
-import com.alok.home.response.GetRawInvestmentsResponse;
+import com.alok.home.commons.dto.api.response.InvestmentsResponse;
+import com.alok.home.commons.dto.api.response.InvestmentsRorMetricsResponse;
+import com.alok.home.commons.dto.api.response.RawInvestmentsResponse;
 import com.alok.home.response.proto.GetInvestmentsResponseOuterClass;
 import com.alok.home.response.proto.GetInvestmentsRorMetricsResponseOuterClass;
 import com.alok.home.response.proto.GetRawInvestmentsResponseOuterClass;
 import com.alok.home.service.InvestmentService;
 import com.alok.home.utils.ProtobufUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +42,7 @@ public class InvestmentController {
 
     @LogExecutionTime
     @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetInvestmentsResponse> getAllInvestments() {
+    public ResponseEntity<InvestmentsResponse> getAllInvestments() {
 
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
@@ -63,7 +62,7 @@ public class InvestmentController {
 
     @LogExecutionTime
     @GetMapping(value = "/return", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetInvestmentsRorMetricsResponse> getInvestmentsRor() {
+    public ResponseEntity<InvestmentsRorMetricsResponse> getInvestmentsRor() {
 
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
@@ -91,13 +90,23 @@ public class InvestmentController {
     }
 
     @LogExecutionTime
+    @GetMapping(value = "/year/{year}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Investment>> getYearInvestments(
+            @PathVariable(value = "year") Integer year
+    ) {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
+                .body(investmentService.getYearInvestments(year));
+    }
+
+    @LogExecutionTime
     @GetMapping(value = "/month/{yearMonth}", produces = MediaType.APPLICATION_PROTOBUF_VALUE)
     public GetRawInvestmentsResponseOuterClass.GetRawInvestmentsResponse getMonthInvestmentsProto(
             @PathVariable(value = "yearMonth") YearMonth yearMonth
     ) throws IOException {
 
         return ProtobufUtil.fromJson(
-                new ObjectMapper().writeValueAsString(GetRawInvestmentsResponse.builder()
+                new ObjectMapper().writeValueAsString(RawInvestmentsResponse.builder()
                         .investments(investmentService.getMonthInvestments(yearMonth))
                         .build()),
                 GetRawInvestmentsResponseOuterClass.GetRawInvestmentsResponse.class
@@ -122,7 +131,7 @@ public class InvestmentController {
     ) throws IOException {
 
         return ProtobufUtil.fromJson(
-                new ObjectMapper().writeValueAsString(GetRawInvestmentsResponse.builder()
+                new ObjectMapper().writeValueAsString(RawInvestmentsResponse.builder()
                         .investments(investmentService.getHeadInvestments(head))
                         .build()),
                 GetRawInvestmentsResponseOuterClass.GetRawInvestmentsResponse.class

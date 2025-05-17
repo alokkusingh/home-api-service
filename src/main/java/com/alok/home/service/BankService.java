@@ -1,12 +1,13 @@
 package com.alok.home.service;
 
+import com.alok.home.commons.dto.api.response.SalaryByCompanyResponse;
+import com.alok.home.commons.dto.api.response.TransactionResponse;
+import com.alok.home.commons.dto.api.response.TransactionsResponse;
 import com.alok.home.commons.dto.exception.ResourceNotFoundException;
 import com.alok.home.commons.entity.Transaction;
 import com.alok.home.commons.repository.TransactionRepository;
 import com.alok.home.config.CacheConfig;
-import com.alok.home.response.GetSalaryByCompanyResponse;
-import com.alok.home.response.GetTransactionResponse;
-import com.alok.home.response.GetTransactionsResponse;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,7 +26,7 @@ public class BankService {
     private TransactionRepository transactionRepository;
 
     @Cacheable(CacheConfig.CacheName.TRANSACTION)
-    public GetTransactionsResponse getAllTransactions() {
+    public TransactionsResponse getAllTransactions() {
         log.info("All Transactions not available in cache");
 
         List<Transaction> transactions = transactionRepository.findAll();
@@ -33,8 +34,8 @@ public class BankService {
                 .orElse(new Date());
         Collections.sort(transactions, (t1, t2) -> t2.getDate().compareTo(t1.getDate()));
 
-        List<GetTransactionsResponse.Transaction> transactionsList = transactions.stream()
-                .map(transaction -> GetTransactionsResponse.Transaction.builder()
+        List<TransactionsResponse.Transaction> transactionsList = transactions.stream()
+                .map(transaction -> TransactionsResponse.Transaction.builder()
                         .id(transaction.getId())
                         .date(transaction.getDate())
                         .head(transaction.getHead())
@@ -45,22 +46,22 @@ public class BankService {
                         .build())
                 .collect(Collectors.toList());
 
-        return GetTransactionsResponse.builder()
+        return TransactionsResponse.builder()
                 .transactions(transactionsList)
                 .count(transactionsList.size())
                 .lastTransactionDate(lastTransactionDate)
                 .build();
     }
 
-    public GetTransactionsResponse getAllTransactions(String statementFileName) {
+    public TransactionsResponse getAllTransactions(String statementFileName) {
 
         List<Transaction> transactions = transactionRepository.findStatementTransactions(statementFileName);
         Date lastTransactionDate = transactionRepository.findLastTransactionDate()
                 .orElse(new Date());
         Collections.sort(transactions, (t1, t2) -> t2.getDate().compareTo(t1.getDate()));
 
-        List<GetTransactionsResponse.Transaction> transactionsList = transactions.stream()
-                .map(transaction -> GetTransactionsResponse.Transaction.builder()
+        List<TransactionsResponse.Transaction> transactionsList = transactions.stream()
+                .map(transaction -> TransactionsResponse.Transaction.builder()
                         .id(transaction.getId())
                         .date(transaction.getDate())
                         .head(transaction.getHead())
@@ -72,7 +73,7 @@ public class BankService {
                         .build())
                 .collect(Collectors.toList());
 
-        return GetTransactionsResponse.builder()
+        return TransactionsResponse.builder()
                 .transactions(transactionsList)
                 .count(transactionsList.size())
                 .lastTransactionDate(lastTransactionDate)
@@ -80,13 +81,13 @@ public class BankService {
     }
 
     @Cacheable(CacheConfig.CacheName.TRANSACTION)
-    public GetTransactionResponse getTransaction(Integer id) {
+    public TransactionResponse getTransaction(Integer id) {
         log.info("Transaction by id not available in cache");
         Transaction transaction = transactionRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found!"));
 
-        return GetTransactionResponse.builder()
+        return TransactionResponse.builder()
                 .id(transaction.getId())
                 .date(transaction.getDate())
                 .head(transaction.getHead())
@@ -99,7 +100,7 @@ public class BankService {
     }
 
     //@Cacheable(CacheConfig.CacheName.TRANSACTION)
-    public GetSalaryByCompanyResponse getSalaryByCompany() {
+    public SalaryByCompanyResponse getSalaryByCompany() {
 
         log.info("All Transactions not available in cache");
 
@@ -108,11 +109,11 @@ public class BankService {
 
         List<Transaction> salaryTransactions = transactionRepository.findSalaryTransactions();
 
-        Map<String, Map<GetSalaryByCompanyResponse.CompanySalary.MonthSalary, Integer>> salaryByCompanyMonth = salaryTransactions.stream()
+        Map<String, Map<SalaryByCompanyResponse.CompanySalary.MonthSalary, Integer>> salaryByCompanyMonth = salaryTransactions.stream()
                 .collect(
                         Collectors.groupingBy(Transaction::getSubHead,
                                 Collectors.groupingBy(
-                                        transaction -> GetSalaryByCompanyResponse.CompanySalary.MonthSalary.builder()
+                                        transaction -> SalaryByCompanyResponse.CompanySalary.MonthSalary.builder()
                                                 .year(Integer.valueOf(dfYear.format(transaction.getDate())))
                                                 .month(Integer.valueOf(dfMonth.format(transaction.getDate())))
                                                 .build(),
@@ -126,7 +127,7 @@ public class BankService {
                         )
                 );
 
-        GetSalaryByCompanyResponse response = GetSalaryByCompanyResponse.builder()
+        SalaryByCompanyResponse response = SalaryByCompanyResponse.builder()
                 .companySalaries(new ArrayList<>(salaryByCompanyMonth.size()))
                 .build();
 
@@ -139,13 +140,13 @@ public class BankService {
                 total.addAndGet(amount);
             });
 
-            List<GetSalaryByCompanyResponse.CompanySalary.MonthSalary> monthlySalaries = new ArrayList<>(
+            List<SalaryByCompanyResponse.CompanySalary.MonthSalary> monthlySalaries = new ArrayList<>(
                     monthSalaryAndAmount.keySet()
             );
 
             Collections.sort(monthlySalaries);
 
-            response.getCompanySalaries().add(GetSalaryByCompanyResponse.CompanySalary.builder()
+            response.getCompanySalaries().add(SalaryByCompanyResponse.CompanySalary.builder()
                     .company(company)
                     .monthSalaries(monthlySalaries)
                     .total(companyTotal.get())

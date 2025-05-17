@@ -1,7 +1,7 @@
 package com.alok.home.stream;
 
 import com.alok.home.commons.entity.Investment;
-import com.alok.home.response.GetInvestmentsResponse;
+import com.alok.home.commons.dto.api.response.InvestmentsResponse;
 
 import java.time.YearMonth;
 import java.util.*;
@@ -13,23 +13,22 @@ import java.util.stream.Collector;
 
 import lombok.Data;
 import org.javatuples.Pair;
-import org.javatuples.Quartet;
 import org.javatuples.Quintet;
 
 // Assumption the investment is sorted on YearMonth Asc
 public class MonthInvestmentCollector implements
         Collector<
                 Investment,
-                Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>,
-                Quintet<Long, Long, Map<String, Long>, Map<String, Long>, List<GetInvestmentsResponse.MonthInvestment>>
+                Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<String, Long>, Map<YearMonth, InvestmentsResponse.MonthInvestment>>,
+                Quintet<Long, Long, Map<String, Long>, Map<String, Long>, List<InvestmentsResponse.MonthInvestment>>
                 > {
     @Override
-    public Supplier<Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>> supplier() {
+    public Supplier<Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<String, Long>, Map<YearMonth, InvestmentsResponse.MonthInvestment>>> supplier() {
         return () -> new Quintet<>(new MutableLong(), Pair.with(new MutableYearMonth(), new MutableLong()), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
     @Override
-    public BiConsumer<Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>, Investment> accumulator() {
+    public BiConsumer<Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<String, Long>, Map<YearMonth, InvestmentsResponse.MonthInvestment>>, Investment> accumulator() {
         return (investmentSummaryQuintet, investment) -> {
             var yearMonth = YearMonth.of(investment.getYearx(), investment.getMonthx());
 
@@ -61,7 +60,7 @@ public class MonthInvestmentCollector implements
             // note - each month for each investment type there will one Investment object
             var yearMonthInvestmentMap = investmentSummaryQuintet.getValue4();
             if (!yearMonthInvestmentMap.containsKey(yearMonth)) {
-                yearMonthInvestmentMap.put(yearMonth, GetInvestmentsResponse.MonthInvestment.builder()
+                yearMonthInvestmentMap.put(yearMonth, InvestmentsResponse.MonthInvestment.builder()
                                 .yearMonth(yearMonth.toString())
                                 .investmentAmount(0L)
                                 .asOnInvestment(0L)
@@ -73,7 +72,7 @@ public class MonthInvestmentCollector implements
             monthInvestment.setInvestmentAmount(monthInvestment.getInvestmentAmount() + investment.getContribution());
             monthInvestment.setAsOnInvestment(investmentSummaryQuintet.getValue0().getValue());
             monthInvestment.setAsOnValue(monthInvestment.getAsOnValue() + investment.getValueAsOnMonth());
-            monthInvestment.getInvestments().add(GetInvestmentsResponse.MonthInvestment.Investment.builder()
+            monthInvestment.getInvestments().add(InvestmentsResponse.MonthInvestment.Investment.builder()
                     .head(investment.getHead())
                     .investmentAmount(investment.getContribution())
                     .asOnValue(investment.getValueAsOnMonth())
@@ -83,14 +82,14 @@ public class MonthInvestmentCollector implements
     }
 
     @Override
-    public BinaryOperator<Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>,Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>> combiner() {
+    public BinaryOperator<Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>,Map<String, Long>, Map<YearMonth, InvestmentsResponse.MonthInvestment>>> combiner() {
         return null;
     }
 
     @Override
     public Function<
-            Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<String, Long>, Map<YearMonth, GetInvestmentsResponse.MonthInvestment>>,
-            Quintet<Long, Long, Map<String, Long>, Map<String, Long>, List<GetInvestmentsResponse.MonthInvestment>>
+            Quintet<MutableLong, Pair<MutableYearMonth, MutableLong>, Map<String, Long>, Map<String, Long>, Map<YearMonth, InvestmentsResponse.MonthInvestment>>,
+            Quintet<Long, Long, Map<String, Long>, Map<String, Long>, List<InvestmentsResponse.MonthInvestment>>
             > finisher() {
         return (investmentSummaryQuintet) -> new Quintet<>(
                 investmentSummaryQuintet.getValue0().getValue(),

@@ -1,11 +1,13 @@
 package com.alok.home.service;
 
+import com.alok.home.commons.constant.Account;
+import com.alok.home.commons.constant.AccountHead;
 import com.alok.home.commons.entity.OdionTransaction;
 import com.alok.home.commons.repository.OdionTransactionRepository;
-import com.alok.home.response.GetOdionAccountTransactionsResponse;
-import com.alok.home.response.GetOdionAccountsBalanceResponse;
-import com.alok.home.response.GetOdionMonthlyAccountTransactionResponse;
-import com.alok.home.response.GetOdionTransactionsResponse;
+import com.alok.home.commons.dto.api.response.OdionAccountTransactionsResponse;
+import com.alok.home.commons.dto.api.response.OdionAccountsBalanceResponse;
+import com.alok.home.commons.dto.api.response.OdionMonthlyAccountTransactionResponse;
+import com.alok.home.commons.dto.api.response.OdionTransactionsResponse;
 import com.alok.home.stream.CustomCollectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,28 +26,28 @@ public class OdionService {
         this.odionTransactionRepository = odionTransactionRepository;
     }
 
-    public GetOdionTransactionsResponse getAllTransactions() {
+    public OdionTransactionsResponse getAllTransactions() {
         log.info("Get all Odion Transaction not in cache");
 
-        return GetOdionTransactionsResponse.builder()
+        return OdionTransactionsResponse.builder()
             .transactions(odionTransactionRepository.findAll().stream()
                 .filter(transaction -> transaction.getAmount() > 0)
                 .toList())
             .build();
     }
 
-    public GetOdionAccountTransactionsResponse getAllTransactions(OdionTransaction.Account account) {
+    public OdionAccountTransactionsResponse getAllTransactions(Account account) {
         log.info("Get all Odion Account Transaction not in cache");
 
 
-        return GetOdionAccountTransactionsResponse.builder()
+        return OdionAccountTransactionsResponse.builder()
             .transactions(
                 odionTransactionRepository.findTransactionsForAccount(account).stream()
-                    .collect(Collector.<OdionTransaction, List<GetOdionAccountTransactionsResponse.AccountTransaction>, List<GetOdionAccountTransactionsResponse.AccountTransaction>>of(
+                    .collect(Collector.<OdionTransaction, List<OdionAccountTransactionsResponse.AccountTransaction>, List<OdionAccountTransactionsResponse.AccountTransaction>>of(
                         ArrayList::new,
                         (accountTransactions, transaction) -> {
                             accountTransactions.add(
-                                GetOdionAccountTransactionsResponse.AccountTransaction.builder()
+                                OdionAccountTransactionsResponse.AccountTransaction.builder()
                                     .id(transaction.getId())
                                     .date(transaction.getDate())
                                     .particular(
@@ -64,80 +66,80 @@ public class OdionService {
             .build();
     }
 
-    public GetOdionAccountsBalanceResponse getAllAccountBalance() {
+    public OdionAccountsBalanceResponse getAllAccountBalance() {
         log.info("Get all Odion Account balance not in cache");
 
         List<OdionTransaction> transactions = odionTransactionRepository.findAll().stream()
             .filter(transaction -> transaction.getAmount() > 0)
             .toList();
 
-        Map<OdionTransaction.Account, Double> accountBalanceMap = transactions.stream().collect(CustomCollectors.toOdionAccountsBalanceCollector());
+        Map<Account, Double> accountBalanceMap = transactions.stream().collect(CustomCollectors.toOdionAccountsBalanceCollector());
 
-        List<GetOdionAccountsBalanceResponse.AccountBalance> accountBalances = new ArrayList<>();
+        List<OdionAccountsBalanceResponse.AccountBalance> accountBalances = new ArrayList<>();
         for (var entry: accountBalanceMap.entrySet()) {
-            accountBalances.add(GetOdionAccountsBalanceResponse.AccountBalance.builder()
+            accountBalances.add(OdionAccountsBalanceResponse.AccountBalance.builder()
                 .account(entry.getKey())
                 .balance(entry.getValue()).build());
         }
 
-        Map<OdionTransaction.AccountHead, List<GetOdionAccountsBalanceResponse.AccountBalance>> headAccountBalances
+        Map<AccountHead, List<OdionAccountsBalanceResponse.AccountBalance>> headAccountBalances
                 = new LinkedHashMap<>();
-        Arrays.stream(OdionTransaction.AccountHead.values())
+        Arrays.stream(AccountHead.values())
             .forEach(head -> {
                 headAccountBalances.putIfAbsent(head, new ArrayList<>());
-                if (head == OdionTransaction.AccountHead.SAVINGS_BANKS) {
+                if (head == AccountHead.SAVINGS_BANKS) {
                     headAccountBalances.get(head).addAll(
                         accountBalances.stream()
-                            .filter(accountBalance -> accountBalance.getAccount() == OdionTransaction.Account.SAVING
-                                    || accountBalance.getAccount() == OdionTransaction.Account.SBI_MAX_GAIN
-                                    || accountBalance.getAccount() == OdionTransaction.Account.BOB_ADVANTAGE)
-                            .sorted(Comparator.comparing(GetOdionAccountsBalanceResponse.AccountBalance::getBalance))
+                            .filter(accountBalance -> accountBalance.getAccount() == Account.SAVING
+                                    || accountBalance.getAccount() == Account.SBI_MAX_GAIN
+                                    || accountBalance.getAccount() == Account.BOB_ADVANTAGE)
+                            .sorted(Comparator.comparing(OdionAccountsBalanceResponse.AccountBalance::getBalance))
                             .toList()
                     );
                 }
-                if (head == OdionTransaction.AccountHead.ODION) {
+                if (head == AccountHead.ODION) {
                     headAccountBalances.get(head).addAll(
                         accountBalances.stream()
-                            .filter(accountBalance -> accountBalance.getAccount() == OdionTransaction.Account.ODION
-                                    || accountBalance.getAccount() == OdionTransaction.Account.INTEREST
-                                    || accountBalance.getAccount() == OdionTransaction.Account.MISC)
-                            .sorted(Comparator.comparing(GetOdionAccountsBalanceResponse.AccountBalance::getBalance))
+                            .filter(accountBalance -> accountBalance.getAccount() == Account.ODION
+                                    || accountBalance.getAccount() == Account.INTEREST
+                                    || accountBalance.getAccount() == Account.MISC)
+                            .sorted(Comparator.comparing(OdionAccountsBalanceResponse.AccountBalance::getBalance))
                             .toList()
                     );
                 }
-                if (head == OdionTransaction.AccountHead.ADARSH) {
+                if (head == AccountHead.ADARSH) {
                     headAccountBalances.get(head).addAll(
                         accountBalances.stream()
-                            .filter(accountBalance -> accountBalance.getAccount() == OdionTransaction.Account.ADARSH
-                                    || accountBalance.getAccount() == OdionTransaction.Account.INTEREST_ADARSH
-                                    || accountBalance.getAccount() == OdionTransaction.Account.MISC_ADARSH)
-                            .sorted(Comparator.comparing(GetOdionAccountsBalanceResponse.AccountBalance::getBalance))
+                            .filter(accountBalance -> accountBalance.getAccount() == Account.ADARSH
+                                    || accountBalance.getAccount() == Account.INTEREST_ADARSH
+                                    || accountBalance.getAccount() == Account.MISC_ADARSH)
+                            .sorted(Comparator.comparing(OdionAccountsBalanceResponse.AccountBalance::getBalance))
                             .toList()
                     );
                 }
-                if (head == OdionTransaction.AccountHead.JYOTHI) {
+                if (head == AccountHead.JYOTHI) {
                     headAccountBalances.get(head).addAll(
                         accountBalances.stream()
-                            .filter(accountBalance -> accountBalance.getAccount() == OdionTransaction.Account.JYOTHI
-                                    || accountBalance.getAccount() == OdionTransaction.Account.INTEREST_JYOTHI
-                                    || accountBalance.getAccount() == OdionTransaction.Account.MISC_JYOTHI)
-                            .sorted(Comparator.comparing(GetOdionAccountsBalanceResponse.AccountBalance::getBalance))
+                            .filter(accountBalance -> accountBalance.getAccount() == Account.JYOTHI
+                                    || accountBalance.getAccount() == Account.INTEREST_JYOTHI
+                                    || accountBalance.getAccount() == Account.MISC_JYOTHI)
+                            .sorted(Comparator.comparing(OdionAccountsBalanceResponse.AccountBalance::getBalance))
                             .toList()
                     );
                 }
             }
         );
 
-        return GetOdionAccountsBalanceResponse.builder()
+        return OdionAccountsBalanceResponse.builder()
             .accountBalances(accountBalances)
             .headAccountBalances(headAccountBalances)
             .build();
     }
 
-    public GetOdionMonthlyAccountTransactionResponse getMonthlyAccountTransaction() {
+    public OdionMonthlyAccountTransactionResponse getMonthlyAccountTransaction() {
         log.info("Get monthly Odion Account transaction not in cache");
 
-        return GetOdionMonthlyAccountTransactionResponse.builder()
+        return OdionMonthlyAccountTransactionResponse.builder()
             .accountMonthTransaction(odionTransactionRepository.findAll().stream()
                 .sorted(Comparator.comparing(OdionTransaction::getDate).reversed())
                 .filter(transaction -> transaction.getAmount() > 0)

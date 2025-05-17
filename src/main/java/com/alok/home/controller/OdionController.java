@@ -1,11 +1,12 @@
 package com.alok.home.controller;
 
+import com.alok.home.commons.constant.Account;
 import com.alok.home.commons.entity.OdionTransaction;
 import com.alok.home.commons.utils.annotation.LogExecutionTime;
-import com.alok.home.response.GetOdionAccountTransactionsResponse;
-import com.alok.home.response.GetOdionAccountsBalanceResponse;
-import com.alok.home.response.GetOdionMonthlyAccountTransactionResponse;
-import com.alok.home.response.GetOdionTransactionsResponse;
+import com.alok.home.commons.dto.api.response.OdionAccountTransactionsResponse;
+import com.alok.home.commons.dto.api.response.OdionAccountsBalanceResponse;
+import com.alok.home.commons.dto.api.response.OdionMonthlyAccountTransactionResponse;
+import com.alok.home.commons.dto.api.response.OdionTransactionsResponse;
 import com.alok.home.service.OdionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +38,7 @@ public class OdionController {
 
     @LogExecutionTime
     @GetMapping(value = "/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetOdionTransactionsResponse> getAllTransactions() {
+    public ResponseEntity<OdionTransactionsResponse> getAllTransactions() {
 
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
@@ -46,8 +47,8 @@ public class OdionController {
 
     @LogExecutionTime
     @GetMapping(value = "/transactions/{account}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetOdionAccountTransactionsResponse> getAllTransactions(
-            @PathVariable(value = "account") OdionTransaction.Account account
+    public ResponseEntity<OdionAccountTransactionsResponse> getAllTransactions(
+            @PathVariable(value = "account") Account account
     ) {
 
         return ResponseEntity.ok()
@@ -57,7 +58,7 @@ public class OdionController {
 
     @LogExecutionTime
     @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetOdionAccountsBalanceResponse> getAllAccountBalance() {
+    public ResponseEntity<OdionAccountsBalanceResponse> getAllAccountBalance() {
 
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
@@ -66,7 +67,7 @@ public class OdionController {
 
     @LogExecutionTime
     @GetMapping(value = "/monthly/transaction", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetOdionMonthlyAccountTransactionResponse> getMonthlyAccountTransaction() {
+    public ResponseEntity<OdionMonthlyAccountTransactionResponse> getMonthlyAccountTransaction() {
 
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())

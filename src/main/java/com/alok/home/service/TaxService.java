@@ -2,7 +2,7 @@ package com.alok.home.service;
 
 import com.alok.home.commons.entity.Tax;
 import com.alok.home.commons.repository.TaxRepository;
-import com.alok.home.response.GetTaxesResponse;
+import com.alok.home.commons.dto.api.response.TaxesResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +22,14 @@ public class TaxService {
         this.taxRepository = taxRepository;
     }
 
-    public GetTaxesResponse getAllTaxes() {
+    public TaxesResponse getAllTaxes() {
         log.info("All Taxes not available in cache");
 
         List<Tax> taxes = taxRepository.findAll();
 
-        return GetTaxesResponse.builder()
+        return TaxesResponse.builder()
                 .taxes(taxes.stream()
-                        .map(tax -> GetTaxesResponse.Tax.builder()
+                        .map(tax -> TaxesResponse.Tax.builder()
                                 .id(tax.getId())
                                 .financialYear(tax.getFinancialYear())
                                 .paidAmount(tax.getPaidAmount())

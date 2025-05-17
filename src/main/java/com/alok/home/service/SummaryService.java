@@ -10,7 +10,7 @@ import com.alok.home.config.CacheConfig;
 import com.alok.home.commons.repository.ExpenseRepository;
 import com.alok.home.commons.repository.InvestmentRepository;
 import com.alok.home.commons.repository.TransactionRepository;
-import com.alok.home.response.GetMonthlySummaryResponse;
+import com.alok.home.commons.dto.api.response.MonthlySummaryResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class SummaryService {
     }
 
     @Cacheable(CacheConfig.CacheName.SUMMARY)
-    public GetMonthlySummaryResponse getMonthSummary(Integer lastXMonths, YearMonth sinceMonth) {
+    public MonthlySummaryResponse getMonthSummary(Integer lastXMonths, YearMonth sinceMonth) {
 
         log.info("Summary not available in cache");
         List<IExpenseMonthSum> expenseSums = expenseRepository.findSumGroupByMonth();
@@ -194,10 +194,10 @@ public class SummaryService {
             xMonthBeforeYearMonth = YearMonth.now().minusMonths(lastXMonths);
 
         YearMonth finalXMonthBeforeYearMonth = xMonthBeforeYearMonth;
-        List<GetMonthlySummaryResponse.MonthlySummary> monthSummaryRecord = expenseMonthSumMap.values().stream()
+        List<MonthlySummaryResponse.MonthlySummary> monthSummaryRecord = expenseMonthSumMap.values().stream()
                 .filter(expenseMonthRecord -> YearMonth.of(expenseMonthRecord.getYearx(), expenseMonthRecord.getMonthx()).isAfter(finalXMonthBeforeYearMonth))
                 .map(
-                        expenseMonthRecord -> GetMonthlySummaryResponse.MonthlySummary.builder()
+                        expenseMonthRecord -> MonthlySummaryResponse.MonthlySummary.builder()
                                 .year(expenseMonthRecord.getYearx())
                                 .month(expenseMonthRecord.getMonthx())
                                 .expenseAmount(expenseMonthRecord.getSum())
@@ -231,7 +231,7 @@ public class SummaryService {
                 .collect(Collectors.toList());
 
 
-        return GetMonthlySummaryResponse.builder()
+        return MonthlySummaryResponse.builder()
                 .records(monthSummaryRecord)
                 .count(monthSummaryRecord.size())
                 .build();

@@ -1,7 +1,7 @@
 package com.alok.home.controller;
 
 import com.alok.home.commons.utils.annotation.LogExecutionTime;
-import com.alok.home.response.GetTaxesResponse;
+import com.alok.home.commons.dto.api.response.TaxesResponse;
 import com.alok.home.service.TaxService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +32,7 @@ public class TaxController {
 
     @LogExecutionTime
     @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetTaxesResponse> getAllTaxes() {
+    public ResponseEntity<TaxesResponse> getAllTaxes() {
 
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())

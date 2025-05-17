@@ -23,7 +23,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 				"com.alok.home.commons.entity",
 				"com.alok.home.commons.repository",
 				"com.alok.home.commons.utils",
-				"com.alok.home.commons.utils.annotations"
+				"com.alok.home.commons.utils.annotations",
+				"com.alok.home.commons.dto.api.response"
 		}
 )
 @Slf4j

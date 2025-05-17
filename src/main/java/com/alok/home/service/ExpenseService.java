@@ -1,5 +1,8 @@
 package com.alok.home.service;
 
+import com.alok.home.commons.dto.api.response.ExpensesMonthSumResponse;
+import com.alok.home.commons.dto.api.response.ExpensesResponse;
+import com.alok.home.commons.dto.api.response.ExpensesResponseAggByDay;
 import com.alok.home.commons.entity.Expense;
 import com.alok.home.commons.entity.IExpenseCategoryMonthSum;
 import com.alok.home.commons.entity.IExpenseMonthSum;
@@ -7,10 +10,7 @@ import com.alok.home.commons.entity.YearMonth;
 import com.alok.home.commons.utils.DateUtils;
 import com.alok.home.config.CacheConfig;
 import com.alok.home.commons.repository.ExpenseRepository;
-import com.alok.home.response.GetExpensesMonthSumByCategoryResponse;
-import com.alok.home.response.GetExpensesMonthSumResponse;
-import com.alok.home.response.GetExpensesResponse;
-import com.alok.home.response.GetExpensesResponseAggByDay;
+import com.alok.home.commons.dto.api.response.ExpensesMonthSumByCategoryResponse;
 import com.alok.home.stream.CustomCollectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -35,7 +35,7 @@ public class ExpenseService {
     }
 
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "#root.methodName")
-    public GetExpensesResponse getAllExpenses() {
+    public ExpensesResponse getAllExpenses() {
         log.info("All Expenses not available in cache");
 
         List<Expense> expenses = expenseRepository.findAll();
@@ -43,9 +43,9 @@ public class ExpenseService {
                 .orElse(new Date());
         Collections.sort(expenses, (t1, t2) -> t2.getDate().compareTo(t1.getDate()));
 
-        return GetExpensesResponse.builder()
+        return ExpensesResponse.builder()
                 .expenses(expenses.stream()
-                        .map(expense -> GetExpensesResponse.Expense.builder()
+                        .map(expense -> ExpensesResponse.Expense.builder()
                                 .id(expense.getId())
                                 .date(expense.getDate())
                                 .head(expense.getHead())
@@ -60,7 +60,7 @@ public class ExpenseService {
     }
 
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "{ #root.methodName, #yearMonth, #category }")
-    public GetExpensesResponse getExpensesForMonth(java.time.YearMonth yearMonth, String category) {
+    public ExpensesResponse getExpensesForMonth(java.time.YearMonth yearMonth, String category) {
         log.info("Current Month Expenses not available in cache");
 
         List<Expense> expenses = null;
@@ -71,9 +71,9 @@ public class ExpenseService {
 
         Collections.sort(expenses, (t1, t2) -> t2.getDate().compareTo(t1.getDate()));
 
-        return GetExpensesResponse.builder()
+        return ExpensesResponse.builder()
                 .expenses(expenses.stream()
-                        .map(expense -> GetExpensesResponse.Expense.builder()
+                        .map(expense -> ExpensesResponse.Expense.builder()
                                 .id(expense.getId())
                                 .date(expense.getDate())
                                 .head(expense.getHead())
@@ -87,7 +87,7 @@ public class ExpenseService {
     }
 
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "{ #root.methodName, #currentDate }")
-    public GetExpensesResponseAggByDay getCurrentMonthExpensesSumByDay(LocalDate currentDate) {
+    public ExpensesResponseAggByDay getCurrentMonthExpensesSumByDay(LocalDate currentDate) {
         log.info("Current Month Expenses Sum By Day not available in cache");
 
         Date lastExpenseDate = expenseRepository.findLastTransactionDate()
@@ -96,7 +96,7 @@ public class ExpenseService {
         List<Expense> expenses = expenseRepository.findAllForMonth(currentDate.getYear(), currentDate.getMonthValue());
         Collections.sort(expenses, (t1, t2) -> t2.getDate().compareTo(t1.getDate()));
 
-        return GetExpensesResponseAggByDay.builder()
+        return ExpensesResponseAggByDay.builder()
                 .expenses(expenses.stream().collect(CustomCollectors.toDayExpenseList()))
                 .categoryExpenses(expenses.stream().collect(CustomCollectors.toCategoryExpenseList()))
                 .lastTransactionDate(lastExpenseDate)
@@ -105,14 +105,14 @@ public class ExpenseService {
     }
 
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "#root.methodName")
-    public GetExpensesMonthSumByCategoryResponse getMonthWiseExpenseCategorySum() {
+    public ExpensesMonthSumByCategoryResponse getMonthWiseExpenseCategorySum() {
         log.info("Month wise Expenses Category Sum not available in cache");
 
         List<IExpenseCategoryMonthSum> expenseCategorySums = expenseRepository.findCategorySumGroupByMonth();
 
-        return GetExpensesMonthSumByCategoryResponse.builder()
+        return ExpensesMonthSumByCategoryResponse.builder()
                 .expenseCategorySums(expenseCategorySums.stream().map(
-                        expMetricSum -> GetExpensesMonthSumByCategoryResponse.ExpenseCategoryMonthSum.builder()
+                        expMetricSum -> ExpensesMonthSumByCategoryResponse.ExpenseCategoryMonthSum.builder()
                                 .year(expMetricSum.getYearx())
                                 .month(expMetricSum.getMonthx())
                                 .category(expMetricSum.getCategory())
@@ -123,11 +123,11 @@ public class ExpenseService {
                 .build();
     }
 
-    public GetExpensesMonthSumByCategoryResponse getYearWiseExpenseCategorySum(Integer year) {
+    public ExpensesMonthSumByCategoryResponse getYearWiseExpenseCategorySum(Integer year) {
         List<IExpenseCategoryMonthSum> expenseCategorySums = expenseRepository.findCategorySumGroupByYear();
 
         var records = expenseCategorySums.stream().map(
-                        expMetricSum -> GetExpensesMonthSumByCategoryResponse.ExpenseCategoryMonthSum.builder()
+                        expMetricSum -> ExpensesMonthSumByCategoryResponse.ExpenseCategoryMonthSum.builder()
                                 .year(expMetricSum.getYearx())
                                 .category(expMetricSum.getCategory())
                                 .sum(expMetricSum.getSum())
@@ -136,22 +136,22 @@ public class ExpenseService {
                 .filter(record -> (year == null) || year.equals(record.getYear()))
                 .toList();
 
-        return GetExpensesMonthSumByCategoryResponse.builder()
+        return ExpensesMonthSumByCategoryResponse.builder()
                 .expenseCategorySums(records)
                 .count(records.size())
                 .build();
     }
 
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "{ #root.methodName, #category }")
-    public GetExpensesMonthSumByCategoryResponse getMonthlyExpenseForCategory(String category) {
+    public ExpensesMonthSumByCategoryResponse getMonthlyExpenseForCategory(String category) {
         log.info("Monthly was expense for category not available in cache");
 
         List<IExpenseCategoryMonthSum> expenseCategorySums = expenseRepository.findMonthlyExpenseForCategory(category);
 
-        return GetExpensesMonthSumByCategoryResponse.builder()
+        return ExpensesMonthSumByCategoryResponse.builder()
                 .expenseCategorySums(
                         expenseCategorySums.stream().map(
-                                expMetricSum -> GetExpensesMonthSumByCategoryResponse.ExpenseCategoryMonthSum.builder()
+                                expMetricSum -> ExpensesMonthSumByCategoryResponse.ExpenseCategoryMonthSum.builder()
                                         .year(expMetricSum.getYearx())
                                         .month(expMetricSum.getMonthx())
                                         .category(expMetricSum.getCategory())
@@ -165,12 +165,12 @@ public class ExpenseService {
     }
 
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "#root.methodName")
-    public GetExpensesMonthSumResponse getMonthWiseExpenseSum() {
+    public ExpensesMonthSumResponse getMonthWiseExpenseSum() {
         log.info("Month wise Expenses Sum not available in cache");
 
         List<IExpenseMonthSum> expenseSums = expenseRepository.findSumGroupByMonth();
 
-        return GetExpensesMonthSumResponse.builder()
+        return ExpensesMonthSumResponse.builder()
                 .expenseCategorySums(expenseSums)
                 .count(expenseSums.size())
                 .build();
@@ -184,25 +184,25 @@ public class ExpenseService {
         }
     }
 
-    public GetExpensesMonthSumResponse getYearWiseExpenseSum() {
+    public ExpensesMonthSumResponse getYearWiseExpenseSum() {
         List<IExpenseMonthSum> expenseSums = expenseRepository.findSumGroupByYear();
 
-        return GetExpensesMonthSumResponse.builder()
+        return ExpensesMonthSumResponse.builder()
                 .expenseCategorySums(expenseSums)
                 .count(expenseSums.size())
                 .build();
     }
 
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "{ #root.methodName, #category }")
-    public GetExpensesResponse getExpensesForCategory(String category) {
+    public ExpensesResponse getExpensesForCategory(String category) {
         log.info("Expenses for Category not available in cache");
 
         List<Expense> expenses = expenseRepository.findAllForCategory(category);
         Collections.sort(expenses, (t1, t2) -> t2.getDate().compareTo(t1.getDate()));
 
-        return GetExpensesResponse.builder()
+        return ExpensesResponse.builder()
                 .expenses(expenses.stream()
-                        .map(expense -> GetExpensesResponse.Expense.builder()
+                        .map(expense -> ExpensesResponse.Expense.builder()
                                 .id(expense.getId())
                                 .date(expense.getDate())
                                 .head(expense.getHead())
@@ -236,7 +236,7 @@ public class ExpenseService {
     }
 
     @Deprecated
-    private List<GetExpensesResponseAggByDay.DayExpense> aggregateExpensesByDayX(List<Expense> expenses) {
+    private List<ExpensesResponseAggByDay.DayExpense> aggregateExpensesByDayX(List<Expense> expenses) {
 
         Map<String, Double> dayExpensesSum = expenses.stream()
                 .collect(Collectors.groupingBy(
@@ -248,11 +248,11 @@ public class ExpenseService {
                         )
                 );
 
-        Map<String, List<GetExpensesResponseAggByDay.Expense>> dayExpenses = expenses.stream()
+        Map<String, List<ExpensesResponseAggByDay.Expense>> dayExpenses = expenses.stream()
                 .collect(Collectors.groupingBy(
                                 expense -> df.format(expense.getDate()),
                                 Collectors.mapping(
-                                        expense -> GetExpensesResponseAggByDay.Expense.builder()
+                                        expense -> ExpensesResponseAggByDay.Expense.builder()
                                                 .head(expense.getHead())
                                                 .comment(expense.getComment())
                                                 .amount(expense.getAmount())
@@ -293,7 +293,7 @@ public class ExpenseService {
         */
 
         return dayExpensesSum.entrySet().stream()
-                .map(entry -> GetExpensesResponseAggByDay.DayExpense.builder()
+                .map(entry -> ExpensesResponseAggByDay.DayExpense.builder()
                         .date(DateUtils.strToDate(entry.getKey()))
                         .amount(entry.getValue())
                         .expenses(dayExpenses.get(entry.getKey()))
@@ -304,7 +304,7 @@ public class ExpenseService {
     }
 
     @Deprecated
-    private List<GetExpensesResponseAggByDay.CategoryExpense> aggregateExpensesByCategory(List<Expense> expenses) {
+    private List<ExpensesResponseAggByDay.CategoryExpense> aggregateExpensesByCategory(List<Expense> expenses) {
 
         Map<String, Double> catExpenses = expenses.stream()
                 .collect(
@@ -321,7 +321,7 @@ public class ExpenseService {
                 );
 
         return catExpenses.entrySet().stream()
-                .map(entry -> GetExpensesResponseAggByDay.CategoryExpense.builder()
+                .map(entry -> ExpensesResponseAggByDay.CategoryExpense.builder()
                         .category(entry.getKey())
                         .amount(entry.getValue())
                         .build())

@@ -1,7 +1,7 @@
 package com.alok.home.controller;
 
 import com.alok.home.commons.utils.annotation.LogExecutionTime;
-import com.alok.home.response.GetMonthlySummaryResponse;
+import com.alok.home.commons.dto.api.response.MonthlySummaryResponse;
 import com.alok.home.service.SummaryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +32,7 @@ public class SummaryController {
 
     @LogExecutionTime
     @GetMapping(value = "/monthly", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetMonthlySummaryResponse> getMonthlySummary(
+    public ResponseEntity<MonthlySummaryResponse> getMonthlySummary(
             @RequestParam(required = false) Integer lastXMonths,
             @RequestParam(required = false, defaultValue = "2007-06") YearMonth sinceMonth
     ) {

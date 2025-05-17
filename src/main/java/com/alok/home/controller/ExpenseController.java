@@ -1,7 +1,10 @@
 package com.alok.home.controller;
 
+import com.alok.home.commons.dto.api.response.ExpensesMonthSumByCategoryResponse;
+import com.alok.home.commons.dto.api.response.ExpensesMonthSumResponse;
+import com.alok.home.commons.dto.api.response.ExpensesResponse;
+import com.alok.home.commons.dto.api.response.ExpensesResponseAggByDay;
 import com.alok.home.commons.utils.annotation.LogExecutionTime;
-import com.alok.home.response.*;
 import com.alok.home.service.ExpenseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +32,11 @@ public class ExpenseController {
 
     @LogExecutionTime
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetExpensesResponse> getExpenses(
+    public ResponseEntity<ExpensesResponse> getExpenses(
             @RequestParam(required = false) String yearMonth,
             @RequestParam(required = false) String category
     ) {
-        GetExpensesResponse expenses = null;
+        ExpensesResponse expenses = null;
         if (yearMonth == null && category == null)
            expenses = expenseService.getAllExpenses();
         else if (yearMonth == null && category != null)
@@ -75,7 +78,7 @@ public class ExpenseController {
     }
     @LogExecutionTime
     @GetMapping(value = "/monthly/categories/{category}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetExpensesMonthSumByCategoryResponse> getMonthlyExpenseForCategory(
+    public ResponseEntity<ExpensesMonthSumByCategoryResponse> getMonthlyExpenseForCategory(
             @PathVariable(value = "category") String category
     ) {
         return ResponseEntity.ok()
@@ -85,7 +88,7 @@ public class ExpenseController {
 
     @LogExecutionTime
     @GetMapping(value = "/sum_by_category_month", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetExpensesMonthSumByCategoryResponse> getMonthWiseExpenseCategorySum() {
+    public ResponseEntity<ExpensesMonthSumByCategoryResponse> getMonthWiseExpenseCategorySum() {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
                 .body(expenseService.getMonthWiseExpenseCategorySum());
@@ -94,7 +97,7 @@ public class ExpenseController {
 
     @LogExecutionTime
     @GetMapping(value = "/sum_by_category_year", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetExpensesMonthSumByCategoryResponse> getYearWiseExpenseCategorySum(
+    public ResponseEntity<ExpensesMonthSumByCategoryResponse> getYearWiseExpenseCategorySum(
             @RequestParam(value = "year", required = false) Integer year
     ) {
         return ResponseEntity.ok()
@@ -104,14 +107,14 @@ public class ExpenseController {
 
     @LogExecutionTime
     @GetMapping(value = "/sum_by_month", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetExpensesMonthSumResponse> getMonthWiseExpenseSum() {
+    public ResponseEntity<ExpensesMonthSumResponse> getMonthWiseExpenseSum() {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
                 .body(expenseService.getMonthWiseExpenseSum());
     }
     @LogExecutionTime
     @GetMapping(value = "/sum_by_year", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetExpensesMonthSumResponse> getYearWiseExpenseSum() {
+    public ResponseEntity<ExpensesMonthSumResponse> getYearWiseExpenseSum() {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
                 .body(expenseService.getYearWiseExpenseSum());
@@ -119,7 +122,7 @@ public class ExpenseController {
 
     @LogExecutionTime
     @GetMapping(value = "/current_month_by_day", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetExpensesResponseAggByDay> getCurrentMonthExpensesSumByDay() {
+    public ResponseEntity<ExpensesResponseAggByDay> getCurrentMonthExpensesSumByDay() {
         LocalDate currentDate = LocalDate.now();
 
         return ResponseEntity.ok()

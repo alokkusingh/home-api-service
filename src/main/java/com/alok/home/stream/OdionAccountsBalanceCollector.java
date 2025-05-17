@@ -1,5 +1,6 @@
 package com.alok.home.stream;
 
+import com.alok.home.commons.constant.Account;
 import com.alok.home.commons.entity.OdionTransaction;
 import org.javatuples.Pair;
 
@@ -10,19 +11,19 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-public class OdionAccountsBalanceCollector implements Collector<OdionTransaction, Pair<Map<OdionTransaction.Account, Double>, Map<OdionTransaction.Account, Double>>, Map<OdionTransaction.Account, Double>> {
+public class OdionAccountsBalanceCollector implements Collector<OdionTransaction, Pair<Map<Account, Double>, Map<Account, Double>>, Map<Account, Double>> {
 
 
     @Override
-    public Supplier<Pair<Map<OdionTransaction.Account, Double>, Map<OdionTransaction.Account, Double>>> supplier() {
+    public Supplier<Pair<Map<Account, Double>, Map<Account, Double>>> supplier() {
         return () -> new Pair<>(new HashMap<>(), new HashMap<>());
     }
 
     @Override
-    public BiConsumer<Pair<Map<OdionTransaction.Account, Double>, Map<OdionTransaction.Account, Double>>, OdionTransaction> accumulator() {
+    public BiConsumer<Pair<Map<Account, Double>, Map<Account, Double>>, OdionTransaction> accumulator() {
         return (debitCreditBalanceMapPair, transaction) -> {
-            Map<OdionTransaction.Account, Double> debitBalanceMap = debitCreditBalanceMapPair.getValue0();
-            Map<OdionTransaction.Account, Double> creditBalanceMap = debitCreditBalanceMapPair.getValue1();
+            Map<Account, Double> debitBalanceMap = debitCreditBalanceMapPair.getValue0();
+            Map<Account, Double> creditBalanceMap = debitCreditBalanceMapPair.getValue1();
 
             //debitBalanceMap.putIfAbsent(transaction.getDebitAccount(), 0.0D);
             //creditBalanceMap.putIfAbsent(transaction.getCreditAccount(), 0.0D);
@@ -37,17 +38,17 @@ public class OdionAccountsBalanceCollector implements Collector<OdionTransaction
     }
 
     @Override
-    public BinaryOperator<Pair<Map<OdionTransaction.Account, Double>, Map<OdionTransaction.Account, Double>>> combiner() {
+    public BinaryOperator<Pair<Map<Account, Double>, Map<Account, Double>>> combiner() {
         return null;
     }
 
     @Override
-    public Function<Pair<Map<OdionTransaction.Account, Double>, Map<OdionTransaction.Account, Double>>, Map<OdionTransaction.Account, Double>> finisher() {
+    public Function<Pair<Map<Account, Double>, Map<Account, Double>>, Map<Account, Double>> finisher() {
         return (debitCreditBalanceMapPair) -> {
-            Map<OdionTransaction.Account, Double> debitBalanceMap = debitCreditBalanceMapPair.getValue0();
-            Map<OdionTransaction.Account, Double> creditBalanceMap = debitCreditBalanceMapPair.getValue1();
+            Map<Account, Double> debitBalanceMap = debitCreditBalanceMapPair.getValue0();
+            Map<Account, Double> creditBalanceMap = debitCreditBalanceMapPair.getValue1();
 
-            Map<OdionTransaction.Account, Double> accountBalanceMap = new HashMap<>();
+            Map<Account, Double> accountBalanceMap = new HashMap<>();
             accountBalanceMap.putAll(debitBalanceMap);
 
             for (var entry: creditBalanceMap.entrySet()) {
