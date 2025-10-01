@@ -61,3 +61,7 @@ iot:
         truststore-password: ${TSPASSWORD}
 
 
+logging:
+    pattern:
+        dateformat: yyyy-MM-dd'T'HH:mm:ss.SSSXXX, UTC
+        console: '%d{"yyyy/MM/dd HH:mm:ss,SSS,UTC"}{GMT+0} [%p] [%t] %M\(%F:%L\) - %msg%n'
