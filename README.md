@@ -8,23 +8,23 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home
 export PATH=$JAVA_HOME/bin:$PATH
 ```
 ### Build Application image
-   ```shell
-   protoc --proto_path=src --java_out=src/main/java src/main/resources/proto/getInvestmentsResponse.proto
-   protoc --proto_path=src --java_out=src/main/java src/main/resources/proto/getInvestmentsRorMetricsResponse.proto
-   protoc --proto_path=src --java_out=src/main/java src/main/resources/proto/getRawInvestmentsResponse.proto
-   ```
-   ```shell
-   docker build --progress=plain -f Dockerfile.native -t alokkusingh/home-api-service:latest -t alokkusingh/home-api-service:2.0.0 .
-   ```
-   ```shell
-   docker push alokkusingh/home-api-service:latest
-   ```
-   ```shell
-   docker push alokkusingh/home-api-service:2.0.0
-   ```
-   ```shell
-   docker run -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service
-   ```
+```shell
+protoc --proto_path=src --java_out=src/main/java src/main/resources/proto/getInvestmentsResponse.proto
+protoc --proto_path=src --java_out=src/main/java src/main/resources/proto/getInvestmentsRorMetricsResponse.proto
+protoc --proto_path=src --java_out=src/main/java src/main/resources/proto/getRawInvestmentsResponse.proto
+```
+```shell
+docker build --progress=plain -f Dockerfile.native -t alokkusingh/home-api-service:latest -t alokkusingh/home-api-service:2.0.0 .
+```
+```shell
+docker push alokkusingh/home-api-service:latest
+```
+```shell
+docker push alokkusingh/home-api-service:2.0.0
+```
+```shell
+docker run -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service
+```
 ### Manual commands - go inside and run binary manually
 ```shell
 docker run -it --entrypoint /bin/bash -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service
