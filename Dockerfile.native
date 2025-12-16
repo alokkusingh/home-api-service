@@ -1,16 +1,40 @@
-FROM alokkusingh/graalvm-ce:23.1.2-java21-arm64 AS builder
+#FROM alokkusingh/graalvm-ce:23.1.2-java21-arm64 AS builder
+#https://container-registry.oracle.com/ords/f?p=113:4:17532286311721:::4:P4_REPOSITORY,AI_REPOSITORY,AI_REPOSITORY_NAME,P4_REPOSITORY_NAME,P4_EULA_ID,P4_BUSINESS_AREA_ID:2204,2204,Oracle%20GraalVM%20Native%20Image%20released%20under%20GFTC,Oracle%20GraalVM%20Native%20Image%20released%20under%20GFTC,1,0&cs=3Z1nlU9uwI1_Y6Qu39ZTfA6IUCZVyIaA7A1RiPOMjfk8tezoe7WNuHquw95hHb5JhjclVNcKxdKT36XJ2F_CcQQ
+FROM ghcr.io/graalvm/native-image-community:21.0.2 AS builder
 ARG JAR_FILE
+
+# Approach 1 - Install maven using microdnf
+#RUN microdnf install maven \
+#    && microdnf clean all
+#ENV M2_HOME /usr/share/maven
+
+# Approach 2 - Copy mvnw wrraper and distribution
+# mvn wrapper:wrapper -Dmaven=3.8.9
+#cp -rf /Users/aloksingh/.m2/wrapper/dists/apache-maven-3.8.9-bin apache-maven-3.8.9-bin
+RUN mkdir -p /home/app
+RUN mkdir -p /root/.m2/wrapper/dists/apache-maven-3.8.9-bin
+COPY apache-maven-3.8.9-bin /root/.m2/wrapper/dists/apache-maven-3.8.9-bin
+COPY settings.xml /root/.m2/settings.xml
+COPY .mvn /home/app/.mvn
+COPY mvnw /home/app/mvnw
+COPY mvnw.cmd /home/app/mvnw.cmd
+
 # Note: native-image is already in above base image (above)
 #RUN gu install native-image
 COPY src /home/app/src
 COPY pom.xml /home/app
-COPY native /home/app/native
-COPY settings.xml $M2_HOME/conf/settings.xml
+COPY back/META-INF/native-image/protobuf-packages.properties /home/app/src/main/resources/META-INF/native-image/
+COPY graalvm-reachability-metadata /home/app/graalvm-reachability-metadata
+#COPY settings.xml $M2_HOME/conf/settings.xml
 WORKDIR /home/app
-RUN ls /home/app
-RUN cat $M2_HOME/conf/settings.xml
-RUN echo $M2_HOME
-RUN mvn clean package -Pnative
+#RUN cat $M2_HOME/conf/settings.xml
+#RUN echo $M2_HOME
+RUN ./mvnw clean package
+#RUN mkdir -p META-INF/native-image
+RUN java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar /home/app/target/home-api-service-1.0.0-SNAPSHOT.jar & sleep 30; kill $!
+#RUN ./mvnw clean test -Dagent=true -X
+#RUN cp target/native/agent-output/test src/main/resources/META-INF/native-image/
+RUN ./mvnw clean package -Pnative -X
 
 FROM arm64v8/ubuntu:focal
 MAINTAINER Alok Singh (alok.ku.singh@gmail.com)

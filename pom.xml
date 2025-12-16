@@ -191,9 +191,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>19</source>
-					<target>19</target>
-					<compilerArgs>--enable-preview</compilerArgs>
+					<source>21</source>
+					<target>21</target>
+<!--					<compilerArgs>&#45;&#45;enable-preview</compilerArgs>-->
 					<!--					<compilerArgs>&#45;&#45;enable-preview</compilerArgs>-->
 				</configuration>
 			</plugin>
@@ -248,6 +248,7 @@ Note: "github" repository definition is present in setting.xml
 					<plugin>
 						<groupId>org.graalvm.buildtools</groupId>
 						<artifactId>native-maven-plugin</artifactId>
+                        <version>0.10.2</version>
 						<executions>
 							<execution>
 								<id>build-native</id>
@@ -262,7 +263,7 @@ Note: "github" repository definition is present in setting.xml
 								-H:+PrintClassInitialization
 								-Dspring.graal.verbose=true
 								-H:+InlineBeforeAnalysis
-								-H:ReflectionConfigurationFiles=native/reflectconfig.json
+<!--								-H:ReflectionConfigurationFiles=/home/app/src/main/resources/META-INF/native-image/reflect-config.json-->
 							</buildArgs>
 						</configuration>
 					</plugin>
