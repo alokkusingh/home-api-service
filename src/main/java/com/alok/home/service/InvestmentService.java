@@ -67,6 +67,7 @@ public class InvestmentService {
         List<Investment> licInvestments = investmentRepository.findAllByHead("LIC");
         List<Investment> shareInvestments = investmentRepository.findAllByHead("SHARE");
         List<Investment> mfInvestments = investmentRepository.findAllByHead("MF");
+        List<Investment> esppInvestments = investmentRepository.findAllByHead("ESPP");
         List<Investment> allInvestments = investmentRepository.findAll();
 
         List<Investment> currentMonthInvestments = investmentRepository.findAllByYearMonth(YearMonth.now().getYear(), YearMonth.now().getMonthValue());
@@ -79,6 +80,7 @@ public class InvestmentService {
         Map<Short, InvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> licYearlyRor = getXirrByYear(licInvestments);
         Map<Short, InvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> shareYearlyRor = getXirrByYear(shareInvestments);
         Map<Short, InvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> mfYearlyRor = getXirrByYear(mfInvestments);
+        Map<Short, InvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> esppYearlyRor = getXirrByYear(esppInvestments);
 
         Map<YearMonth, List<Investment>> allInvestmentByMonth = allInvestments.stream()
                 .collect(Collectors.groupingBy(investment -> YearMonth.of(investment.getYearx(), investment.getMonthx())));
@@ -111,6 +113,7 @@ public class InvestmentService {
                 .LIC(getCumulativeReturn(licYearlyRor))
                 .SHARE(getCumulativeReturn(shareYearlyRor))
                 .MF(getCumulativeReturn(mfYearlyRor))
+                .ESPP(getCumulativeReturn(esppYearlyRor))
                 .total(getCumulativeReturn(totalYearlyRor))
                 .build();
 
@@ -121,6 +124,7 @@ public class InvestmentService {
                 .LIC(getAverageReturn(licYearlyRor))
                 .SHARE(getAverageReturn(shareYearlyRor))
                 .MF(getAverageReturn(mfYearlyRor))
+                .ESPP(getAverageReturn(esppYearlyRor))
                 .total(getAverageReturn(totalYearlyRor))
                 .build();
 
@@ -135,6 +139,8 @@ public class InvestmentService {
         Investment currentMinusOneMonthShare = currentMonthMinusOneInvestments.stream().filter(investment -> investment.getHead().equals("SHARE")).findFirst().get();
         Investment currentMonthMF = currentMonthInvestments.stream().filter(investment -> investment.getHead().equals("MF")).findFirst().get();
         Investment currentMinusOneMonthMF = currentMonthMinusOneInvestments.stream().filter(investment -> investment.getHead().equals("MF")).findFirst().get();
+        Investment currentMonthESPP = currentMonthInvestments.stream().filter(investment -> investment.getHead().equals("ESPP")).findFirst().get();
+        Investment currentMinusOneMonthESPP = currentMonthMinusOneInvestments.stream().filter(investment -> investment.getHead().equals("ESPP")).findFirst().get();
         Investment currentMonthAll = currentMonthInvestments.stream().reduce(Investment.builder()
                         .contribution(0)
                         .contributionAsOnMonth(0)
@@ -197,6 +203,13 @@ public class InvestmentService {
                         //.ror(getXirrForAMonth(List.of(currentMonthMF), currentMinusOneMonthMF.getValueAsOnMonth(), currentMonthMF.getValueAsOnMonth()))
                         .ror(getRorForMonth(currentMonthMF, currentMinusOneMonthMF.getValueAsOnMonth()))
                         .build())
+                .ESPP(                        InvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
+                        .beg(currentMinusOneMonthESPP.getValueAsOnMonth())
+                        .inv(currentMonthESPP.getContribution())
+                        .end(currentMonthESPP.getValueAsOnMonth())
+                        //.ror(getXirrForAMonth(List.of(currentMonthESPP), currentMinusOneMonthESPP.getValueAsOnMonth(), currentMonthESPP.getValueAsOnMonth()))
+                        .ror(getRorForMonth(currentMonthESPP, currentMinusOneMonthESPP.getValueAsOnMonth()))
+                        .build())
                 .total(InvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
                         .beg(currentMinusOneMonthAll.getValueAsOnMonth())
                         .inv(currentMonthAll.getContribution())
@@ -212,6 +225,7 @@ public class InvestmentService {
         Investment currentMinusTwoMonthLIC = currentMonthMinusTwoInvestments.stream().filter(investment -> investment.getHead().equals("LIC")).findFirst().get();
         Investment currentMinusTwoMonthShare = currentMonthMinusTwoInvestments.stream().filter(investment -> investment.getHead().equals("SHARE")).findFirst().get();
         Investment currentMinusTwoMonthMF = currentMonthMinusTwoInvestments.stream().filter(investment -> investment.getHead().equals("MF")).findFirst().get();
+        Investment currentMinusTwoMonthESPP = currentMonthMinusTwoInvestments.stream().filter(investment -> investment.getHead().equals("ESPP")).findFirst().get();
         Investment currentMinusTwoMonthAll = currentMonthMinusTwoInvestments.stream().reduce(Investment.builder()
                 .contribution(0)
                 .contributionAsOnMonth(0)
@@ -263,6 +277,13 @@ public class InvestmentService {
                         //.ror(getXirrForAMonth(List.of(currentMinusOneMonthMF), currentMinusTwoMonthMF.getValueAsOnMonth(), currentMinusOneMonthMF.getValueAsOnMonth()))
                         .ror(getRorForMonth(currentMinusOneMonthMF, currentMinusTwoMonthMF.getValueAsOnMonth()))
                         .build())
+                .ESPP(                        InvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
+                        .beg(currentMinusTwoMonthESPP.getValueAsOnMonth())
+                        .inv(currentMinusOneMonthESPP.getContribution())
+                        .end(currentMinusOneMonthESPP.getValueAsOnMonth())
+                        //.ror(getXirrForAMonth(List.of(currentMinusOneMonthESPP), currentMinusTwoMonthESPP.getValueAsOnMonth(), currentMinusOneMonthESPP.getValueAsOnMonth()))
+                        .ror(getRorForMonth(currentMinusOneMonthESPP, currentMinusTwoMonthESPP.getValueAsOnMonth()))
+                        .build())
                 .total(InvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
                         .beg(currentMinusTwoMonthAll.getValueAsOnMonth())
                         .inv(currentMinusOneMonthAll.getContribution())
@@ -277,6 +298,7 @@ public class InvestmentService {
         Investment currentMinusThreeMonthLIC = currentMonthMinusThreeInvestments.stream().filter(investment -> investment.getHead().equals("LIC")).findFirst().get();
         Investment currentMinusThreeMonthShare = currentMonthMinusThreeInvestments.stream().filter(investment -> investment.getHead().equals("SHARE")).findFirst().get();
         Investment currentMinusThreeMonthMF = currentMonthMinusThreeInvestments.stream().filter(investment -> investment.getHead().equals("MF")).findFirst().get();
+        Investment currentMinusThreeMonthESPP = currentMonthMinusThreeInvestments.stream().filter(investment -> investment.getHead().equals("ESPP")).findFirst().get();
         Investment currentMinusThreeMonthAll = currentMonthMinusThreeInvestments.stream().reduce(Investment.builder()
                 .contribution(0)
                 .contributionAsOnMonth(0)
@@ -328,6 +350,13 @@ public class InvestmentService {
                         //.ror(getXirrForAMonth(List.of(currentMinusOneMonthMF), currentMinusTwoMonthMF.getValueAsOnMonth(), currentMinusOneMonthMF.getValueAsOnMonth()))
                         .ror(getRorForMonth(currentMinusTwoMonthMF, currentMinusThreeMonthMF.getValueAsOnMonth()))
                         .build())
+                .ESPP(                        InvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
+                        .beg(currentMinusThreeMonthESPP.getValueAsOnMonth())
+                        .inv(currentMinusTwoMonthESPP.getContribution())
+                        .end(currentMinusTwoMonthESPP.getValueAsOnMonth())
+                        //.ror(getXirrForAMonth(List.of(currentMinusOneMonthESPP), currentMinusTwoMonthESPP.getValueAsOnMonth(), currentMinusOneMonthESPP.getValueAsOnMonth()))
+                        .ror(getRorForMonth(currentMinusTwoMonthESPP, currentMinusThreeMonthESPP.getValueAsOnMonth()))
+                        .build())
                 .total(InvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
                         .beg(currentMinusThreeMonthAll.getValueAsOnMonth())
                         .inv(currentMinusTwoMonthAll.getContribution())
@@ -350,6 +379,7 @@ public class InvestmentService {
                             .LIC(licYearlyRor.get(year))
                             .SHARE(shareYearlyRor.get(year))
                             .MF(mfYearlyRor.get(year))
+                            .ESPP(esppYearlyRor.get(year))
                             .total(totalYearlyRor.get(year))
                             .build())
 
@@ -565,6 +595,15 @@ public class InvestmentService {
             Map<Short, InvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn> yearlyRors
     ) {
 
+        // this is to handle if the investment not started yet
+        if (yearlyRors.isEmpty()) {
+            return InvestmentsRorMetricsResponse.InvestmentsRorMetric.InvestmentsReturn.builder()
+                    .beg(0)
+                    .end(0)
+                    .inv(0)
+                    .ror(0.0)
+                    .build();
+        }
         // this is to handle if the investment started in current year only
         if (yearlyRors.size() == 1) {
             Optional<Short> year = yearlyRors.keySet().stream().findFirst();
