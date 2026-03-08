@@ -28,8 +28,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class InvestmentControllerImpl extends InvestmentController {
 
-    private InvestmentService investmentService;
-    private Long cacheControlMaxAge;
+    private final InvestmentService investmentService;
+    private final Long cacheControlMaxAge;
 
     public InvestmentControllerImpl(
             InvestmentService investmentService,

@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class OdionControllerImpl extends OdionController {
 
-    private OdionService odionService;
-    private Long cacheControlMaxAge;
+    private final OdionService odionService;
+    private final Long cacheControlMaxAge;
 
     public OdionControllerImpl(
             OdionService odionService,

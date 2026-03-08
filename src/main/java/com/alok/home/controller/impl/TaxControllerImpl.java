@@ -2,6 +2,7 @@ package com.alok.home.controller.impl;
 
 import com.alok.home.commons.dto.api.response.TaxesResponse;
 import com.alok.home.commons.utils.annotation.LogExecutionTime;
+import com.alok.home.controller.TaxController;
 import com.alok.home.service.TaxService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,10 +14,10 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
-public class TaxControllerImpl {
+public class TaxControllerImpl extends TaxController {
 
-    private TaxService taxService;
-    private Long cacheControlMaxAge;
+    private final TaxService taxService;
+    private final Long cacheControlMaxAge;
 
     public TaxControllerImpl(
             TaxService taxService,

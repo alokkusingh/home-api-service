@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class ExpenseControllerImpl extends ExpenseController {
 
-
     @Autowired
     private ExpenseService expenseService;
 

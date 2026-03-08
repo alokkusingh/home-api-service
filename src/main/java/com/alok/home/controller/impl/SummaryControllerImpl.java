@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class SummaryControllerImpl extends SummaryController {
 
-    private SummaryService summaryService;
+    private final SummaryService summaryService;
 
     @Value("${web.cache-control.max-age}")
     private Long cacheControlMaxAge;
