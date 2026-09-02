@@ -8,6 +8,8 @@ import com.alok.home.commons.entity.IExpenseCategoryMonthSum;
 import com.alok.home.commons.entity.IExpenseMonthSum;
 import com.alok.home.commons.entity.YearMonth;
 import com.alok.home.commons.utils.DateUtils;
+import com.alok.home.commons.utils.annotation.compiletime.CompileTimeInfo;
+import com.alok.home.commons.utils.annotation.compiletime.TrackMethod;
 import com.alok.home.config.CacheConfig;
 import com.alok.home.commons.repository.ExpenseRepository;
 import com.alok.home.commons.dto.api.response.ExpensesMonthSumByCategoryResponse;
@@ -23,17 +25,19 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@CompileTimeInfo(author = "Alok Singh")
 @Slf4j
 @Service
 public class ExpenseService {
 
-    private ExpenseRepository expenseRepository;
+    private final ExpenseRepository expenseRepository;
     private final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
     public ExpenseService(ExpenseRepository expenseRepository) {
         this.expenseRepository = expenseRepository;
     }
 
+    @TrackMethod
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "#root.methodName")
     public ExpensesResponse getAllExpenses() {
         log.info("All Expenses not available in cache");
@@ -59,6 +63,7 @@ public class ExpenseService {
                 .build();
     }
 
+    @TrackMethod
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "{ #root.methodName, #yearMonth, #category }")
     public ExpensesResponse getExpensesForMonth(java.time.YearMonth yearMonth, String category) {
         log.info("Current Month Expenses not available in cache");
@@ -86,6 +91,7 @@ public class ExpenseService {
                 .build();
     }
 
+    @TrackMethod
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "{ #root.methodName, #currentDate }")
     public ExpensesResponseAggByDay getCurrentMonthExpensesSumByDay(LocalDate currentDate) {
         log.info("Current Month Expenses Sum By Day not available in cache");
@@ -104,6 +110,7 @@ public class ExpenseService {
                 .build();
     }
 
+    @TrackMethod
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "#root.methodName")
     public ExpensesMonthSumByCategoryResponse getMonthWiseExpenseCategorySum() {
         log.info("Month wise Expenses Category Sum not available in cache");
@@ -123,6 +130,7 @@ public class ExpenseService {
                 .build();
     }
 
+    @TrackMethod
     public ExpensesMonthSumByCategoryResponse getYearWiseExpenseCategorySum(Integer year) {
         List<IExpenseCategoryMonthSum> expenseCategorySums = expenseRepository.findCategorySumGroupByYear();
 
@@ -142,6 +150,7 @@ public class ExpenseService {
                 .build();
     }
 
+    @TrackMethod
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "{ #root.methodName, #category }")
     public ExpensesMonthSumByCategoryResponse getMonthlyExpenseForCategory(String category) {
         log.info("Monthly was expense for category not available in cache");
@@ -164,6 +173,7 @@ public class ExpenseService {
                 .build();
     }
 
+    @TrackMethod
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "#root.methodName")
     public ExpensesMonthSumResponse getMonthWiseExpenseSum() {
         log.info("Month wise Expenses Sum not available in cache");
@@ -176,6 +186,7 @@ public class ExpenseService {
                 .build();
     }
 
+    @TrackMethod
     private Date strToDate(String dateStr) {
         try {
             return df.parse(dateStr);
@@ -184,6 +195,7 @@ public class ExpenseService {
         }
     }
 
+    @TrackMethod
     public ExpensesMonthSumResponse getYearWiseExpenseSum() {
         List<IExpenseMonthSum> expenseSums = expenseRepository.findSumGroupByYear();
 
@@ -193,6 +205,7 @@ public class ExpenseService {
                 .build();
     }
 
+    @TrackMethod
     @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "{ #root.methodName, #category }")
     public ExpensesResponse getExpensesForCategory(String category) {
         log.info("Expenses for Category not available in cache");
@@ -215,10 +228,12 @@ public class ExpenseService {
                 .build();
     }
 
+    @TrackMethod
     public List<String> getExpenseCategories() {
         return expenseRepository.findDistinctCategories();
     }
 
+    @TrackMethod
     public List<YearMonth> getExpenseMonths() {
         List<YearMonth> yearMonths = expenseRepository.findDistinctYearMonths();
         Collections.sort(yearMonths);
@@ -226,6 +241,7 @@ public class ExpenseService {
         return yearMonths;
     }
 
+    @TrackMethod
     @Transactional
     public void saveAllExpenses(List<Expense> expenseRecords) {
         log.info("Delete all the expenses first");
@@ -235,6 +251,7 @@ public class ExpenseService {
         expenseRepository.saveAll(expenseRecords);
     }
 
+    @TrackMethod
     @Deprecated
     private List<ExpensesResponseAggByDay.DayExpense> aggregateExpensesByDayX(List<Expense> expenses) {
 
@@ -303,6 +320,7 @@ public class ExpenseService {
                 .collect(Collectors.toList());
     }
 
+    @TrackMethod
     @Deprecated
     private List<ExpensesResponseAggByDay.CategoryExpense> aggregateExpensesByCategory(List<Expense> expenses) {
 

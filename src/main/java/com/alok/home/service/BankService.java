@@ -6,6 +6,8 @@ import com.alok.home.commons.dto.api.response.TransactionsResponse;
 import com.alok.home.commons.dto.exception.ResourceNotFoundException;
 import com.alok.home.commons.entity.Transaction;
 import com.alok.home.commons.repository.TransactionRepository;
+import com.alok.home.commons.utils.annotation.compiletime.CompileTimeInfo;
+import com.alok.home.commons.utils.annotation.compiletime.TrackMethod;
 import com.alok.home.config.CacheConfig;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+@CompileTimeInfo(author = "Alok Singh")
 @Slf4j
 @Service
 public class BankService {
@@ -25,6 +28,7 @@ public class BankService {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @TrackMethod
     @Cacheable(CacheConfig.CacheName.TRANSACTION)
     public TransactionsResponse getAllTransactions() {
         log.info("All Transactions not available in cache");
@@ -53,6 +57,7 @@ public class BankService {
                 .build();
     }
 
+    @TrackMethod
     public TransactionsResponse getAllTransactions(String statementFileName) {
 
         List<Transaction> transactions = transactionRepository.findStatementTransactions(statementFileName);
@@ -80,6 +85,7 @@ public class BankService {
                 .build();
     }
 
+    @TrackMethod
     @Cacheable(CacheConfig.CacheName.TRANSACTION)
     public TransactionResponse getTransaction(Integer id) {
         log.info("Transaction by id not available in cache");
@@ -99,6 +105,7 @@ public class BankService {
                 .build();
     }
 
+    @TrackMethod
     //@Cacheable(CacheConfig.CacheName.TRANSACTION)
     public SalaryByCompanyResponse getSalaryByCompany() {
 

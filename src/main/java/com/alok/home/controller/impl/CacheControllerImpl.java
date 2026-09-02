@@ -1,6 +1,6 @@
 package com.alok.home.controller.impl;
 
-import com.alok.home.commons.utils.annotation.LogExecutionTime;
+import com.alok.home.commons.utils.annotation.runtime.LogExecutionTime;
 import com.alok.home.controller.CacheController;
 import com.alok.home.service.CacheService;
 import lombok.extern.slf4j.Slf4j;

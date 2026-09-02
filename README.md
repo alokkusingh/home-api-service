@@ -27,7 +27,7 @@ docker run -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-servic
 ```
 ### Manual commands - go inside and run binary manually
 ```shell
-docker run -it --entrypoint /bin/bash -p 8081:8081 --rm --name home-api-service alokkusingh/home-api-service
+docker run -it --entrypoint /bin/bash -p 8082:8081 --rm --name home-api-service alokkusingh/home-api-service
 ```
 ```shell
 ./home-api-service --java.security.egd=file:/dev/urandom --spring.profiles.active=prod --spring.datasource.url=jdbc:mysql://192.168.1.200:32306/home-stack \

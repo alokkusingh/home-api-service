@@ -5,7 +5,7 @@ import com.alok.home.commons.dto.api.response.OdionAccountTransactionsResponse;
 import com.alok.home.commons.dto.api.response.OdionAccountsBalanceResponse;
 import com.alok.home.commons.dto.api.response.OdionMonthlyAccountTransactionResponse;
 import com.alok.home.commons.dto.api.response.OdionTransactionsResponse;
-import com.alok.home.commons.utils.annotation.LogExecutionTime;
+import com.alok.home.commons.utils.annotation.runtime.LogExecutionTime;
 import com.alok.home.controller.OdionController;
 import com.alok.home.service.OdionService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.concurrent.TimeUnit;
 
@@ -41,7 +42,7 @@ public class OdionControllerImpl extends OdionController {
 
     @LogExecutionTime
     public ResponseEntity<OdionAccountTransactionsResponse> getAllTransactions(
-            Account account
+            @PathVariable(value = "account") Account account
     ) {
 
         return ResponseEntity.ok()

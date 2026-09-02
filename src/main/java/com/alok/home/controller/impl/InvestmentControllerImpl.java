@@ -4,7 +4,7 @@ import com.alok.home.commons.dto.api.response.InvestmentsResponse;
 import com.alok.home.commons.dto.api.response.InvestmentsRorMetricsResponse;
 import com.alok.home.commons.dto.api.response.RawInvestmentsResponse;
 import com.alok.home.commons.entity.Investment;
-import com.alok.home.commons.utils.annotation.LogExecutionTime;
+import com.alok.home.commons.utils.annotation.runtime.LogExecutionTime;
 import com.alok.home.controller.InvestmentController;
 import com.alok.home.response.proto.GetInvestmentsResponseOuterClass;
 import com.alok.home.response.proto.GetInvestmentsRorMetricsResponseOuterClass;
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.io.IOException;
 import java.time.YearMonth;
@@ -74,7 +75,7 @@ public class InvestmentControllerImpl extends InvestmentController {
 
     @LogExecutionTime
     public ResponseEntity<List<Investment>> getMonthInvestments(
-            YearMonth yearMonth
+            @PathVariable(value = "yearMonth") YearMonth yearMonth
     ) {
 
         return ResponseEntity.ok()
@@ -84,7 +85,7 @@ public class InvestmentControllerImpl extends InvestmentController {
 
     @LogExecutionTime
     public ResponseEntity<List<Investment>> getYearInvestments(
-           Integer year
+            @PathVariable(value = "year") Integer year
     ) {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
@@ -93,7 +94,7 @@ public class InvestmentControllerImpl extends InvestmentController {
 
     @LogExecutionTime
     public GetRawInvestmentsResponseOuterClass.GetRawInvestmentsResponse getMonthInvestmentsProto(
-            YearMonth yearMonth
+            @PathVariable(value = "yearMonth") YearMonth yearMonth
     ) throws IOException {
 
         return ProtobufUtil.fromJson(
@@ -106,7 +107,7 @@ public class InvestmentControllerImpl extends InvestmentController {
 
     @LogExecutionTime
     public ResponseEntity<List<Investment>> getHeadInvestments(
-            String head
+            @PathVariable("head") String head
     ) {
 
         return ResponseEntity.ok()
@@ -116,7 +117,7 @@ public class InvestmentControllerImpl extends InvestmentController {
 
     @LogExecutionTime
     public GetRawInvestmentsResponseOuterClass.GetRawInvestmentsResponse getHeadInvestmentsProto(
-            String head
+            @PathVariable(value = "head") String head
     ) throws IOException {
 
         return ProtobufUtil.fromJson(

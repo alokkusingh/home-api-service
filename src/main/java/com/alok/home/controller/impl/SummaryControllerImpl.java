@@ -1,7 +1,7 @@
 package com.alok.home.controller.impl;
 
 import com.alok.home.commons.dto.api.response.MonthlySummaryResponse;
-import com.alok.home.commons.utils.annotation.LogExecutionTime;
+import com.alok.home.commons.utils.annotation.runtime.LogExecutionTime;
 import com.alok.home.controller.SummaryController;
 import com.alok.home.service.SummaryService;
 import lombok.extern.slf4j.Slf4j;

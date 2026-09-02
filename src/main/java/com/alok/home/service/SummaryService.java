@@ -6,6 +6,7 @@ import com.alok.home.commons.entity.Investment;
 import com.alok.home.commons.entity.Transaction;
 import com.alok.home.commons.entity.TaxMonthly;
 import com.alok.home.commons.repository.TaxMonthlyRepository;
+import com.alok.home.commons.utils.annotation.compiletime.CompileTimeInfo;
 import com.alok.home.config.CacheConfig;
 import com.alok.home.commons.repository.ExpenseRepository;
 import com.alok.home.commons.repository.InvestmentRepository;
@@ -20,6 +21,7 @@ import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@CompileTimeInfo(author = "Alok Singh")
 @Slf4j
 @Service
 public class SummaryService {

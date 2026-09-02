@@ -4,7 +4,7 @@ import com.alok.home.commons.dto.api.response.ExpensesMonthSumByCategoryResponse
 import com.alok.home.commons.dto.api.response.ExpensesMonthSumResponse;
 import com.alok.home.commons.dto.api.response.ExpensesResponse;
 import com.alok.home.commons.dto.api.response.ExpensesResponseAggByDay;
-import com.alok.home.commons.utils.annotation.LogExecutionTime;
+import com.alok.home.commons.utils.annotation.runtime.LogExecutionTime;
 import com.alok.home.controller.ExpenseController;
 import com.alok.home.service.ExpenseService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -74,7 +76,7 @@ public class ExpenseControllerImpl extends ExpenseController {
 
     @LogExecutionTime
     public ResponseEntity<ExpensesMonthSumByCategoryResponse> getMonthlyExpenseForCategory(
-            String category
+            @PathVariable(value = "category") String category
     ) {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
@@ -90,7 +92,7 @@ public class ExpenseControllerImpl extends ExpenseController {
 
     @LogExecutionTime
     public ResponseEntity<ExpensesMonthSumByCategoryResponse> getYearWiseExpenseCategorySum(
-            Integer year
+            @RequestParam(value = "year", required = false) Integer year
     ) {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())

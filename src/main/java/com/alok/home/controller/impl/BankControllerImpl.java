@@ -3,7 +3,7 @@ package com.alok.home.controller.impl;
 import com.alok.home.commons.dto.api.response.SalaryByCompanyResponse;
 import com.alok.home.commons.dto.api.response.TransactionResponse;
 import com.alok.home.commons.dto.api.response.TransactionsResponse;
-import com.alok.home.commons.utils.annotation.LogExecutionTime;
+import com.alok.home.commons.utils.annotation.runtime.LogExecutionTime;
 import com.alok.home.controller.BankController;
 import com.alok.home.service.BankService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +27,7 @@ public class BankControllerImpl extends BankController {
     private Long cacheControlMaxAge;
 
     @LogExecutionTime
+    @Override
     public ResponseEntity<TransactionsResponse> getAllTransactions(
             String statementFileName
     ) {
@@ -42,13 +44,15 @@ public class BankControllerImpl extends BankController {
     }
 
     @LogExecutionTime
-    public ResponseEntity<TransactionResponse> getTransaction(Integer id) {
+    @Override
+    public ResponseEntity<TransactionResponse> getTransaction(@PathVariable(value = "id") Integer id) {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.noCache())
                 .body(bankService.getTransaction(id));
     }
 
     @LogExecutionTime
+    @Override
     public ResponseEntity<SalaryByCompanyResponse> getSalaryByCompany() {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())

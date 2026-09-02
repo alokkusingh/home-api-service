@@ -3,6 +3,7 @@ package com.alok.home.service;
 import com.alok.home.commons.entity.Tax;
 import com.alok.home.commons.repository.TaxRepository;
 import com.alok.home.commons.dto.api.response.TaxesResponse;
+import com.alok.home.commons.utils.annotation.compiletime.CompileTimeInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@CompileTimeInfo(author = "Alok Singh")
 @Slf4j
 @Service
 public class TaxService {

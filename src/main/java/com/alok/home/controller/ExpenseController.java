@@ -23,6 +23,7 @@ import java.util.List;
 @Tag(name = "Expense", description = "APIs to query and aggregate expenses")
 public abstract class ExpenseController {
 
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get expenses",
             description = "Returns expenses optionally filtered by `yearMonth` and/or `category`."
@@ -35,7 +36,6 @@ public abstract class ExpenseController {
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public abstract ResponseEntity<ExpensesResponse> getExpenses(
             @Parameter(description = "Optional year and month in format YYYY-MM (e.g. 2024-03)", required = false)
             @RequestParam(required = false) String yearMonth,
@@ -43,6 +43,7 @@ public abstract class ExpenseController {
             @RequestParam(required = false) String category
     );
 
+    @GetMapping(value = "/categories/names", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get expense categories",
             description = "Returns a list of distinct expense category names."
@@ -55,9 +56,9 @@ public abstract class ExpenseController {
             @ApiResponse(responseCode = "204", description = "No categories found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = "/categories/names", produces = MediaType.APPLICATION_JSON_VALUE)
     public abstract ResponseEntity<List<String>> getExpenseCategories();
 
+    @GetMapping(value = "/months", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get expense months",
             description = "Returns available year-month values for which expenses exist."
@@ -70,9 +71,9 @@ public abstract class ExpenseController {
             @ApiResponse(responseCode = "204", description = "No months found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = "/months", produces = MediaType.APPLICATION_JSON_VALUE)
     public abstract ResponseEntity<List<com.alok.home.commons.entity.YearMonth>> getExpenseMonths();
 
+    @GetMapping(value = "/monthly/categories/{category}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get monthly expense for category",
             description = "Returns monthly expense sums for the given category."
@@ -85,12 +86,12 @@ public abstract class ExpenseController {
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = "/monthly/categories/{category}", produces = MediaType.APPLICATION_JSON_VALUE)
     public abstract ResponseEntity<ExpensesMonthSumByCategoryResponse> getMonthlyExpenseForCategory(
             @Parameter(description = "Expense category name", required = true, example = "Groceries")
             @PathVariable(value = "category") String category
     );
 
+    @GetMapping(value = "/sum_by_category_month", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get month-wise expense sum by category",
             description = "Returns month-wise expense sums grouped by category."
@@ -102,10 +103,9 @@ public abstract class ExpenseController {
             ),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = "/sum_by_category_month", produces = MediaType.APPLICATION_JSON_VALUE)
     public abstract ResponseEntity<ExpensesMonthSumByCategoryResponse> getMonthWiseExpenseCategorySum();
 
-
+    @GetMapping(value = "/sum_by_category_year", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get year-wise expense sum by category",
             description = "Returns year-wise expense sums grouped by category. Optional `year` query parameter filters the year."
@@ -118,12 +118,12 @@ public abstract class ExpenseController {
             @ApiResponse(responseCode = "400", description = "Invalid year supplied"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = "/sum_by_category_year", produces = MediaType.APPLICATION_JSON_VALUE)
     public abstract ResponseEntity<ExpensesMonthSumByCategoryResponse> getYearWiseExpenseCategorySum(
             @Parameter(description = "Optional year to filter results (e.g. 2024)", required = false, example = "2024")
             @RequestParam(value = "year", required = false) Integer year
     );
 
+    @GetMapping(value = "/sum_by_month", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get month-wise expense sum",
             description = "Returns aggregated expense sums per month."
@@ -135,9 +135,9 @@ public abstract class ExpenseController {
             ),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = "/sum_by_month", produces = MediaType.APPLICATION_JSON_VALUE)
     public abstract ResponseEntity<ExpensesMonthSumResponse> getMonthWiseExpenseSum();
 
+    @GetMapping(value = "/sum_by_year", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get year-wise expense sum",
             description = "Returns aggregated expense sums per year."
@@ -149,9 +149,9 @@ public abstract class ExpenseController {
             ),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = "/sum_by_year", produces = MediaType.APPLICATION_JSON_VALUE)
     public abstract ResponseEntity<ExpensesMonthSumResponse> getYearWiseExpenseSum();
 
+    @GetMapping(value = "/current_month_by_day", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get current month expenses aggregated by day",
             description = "Returns daily aggregation for the current month's expenses."
@@ -163,6 +163,5 @@ public abstract class ExpenseController {
             ),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @GetMapping(value = "/current_month_by_day", produces = MediaType.APPLICATION_JSON_VALUE)
     public abstract ResponseEntity<ExpensesResponseAggByDay> getCurrentMonthExpensesSumByDay();
 }

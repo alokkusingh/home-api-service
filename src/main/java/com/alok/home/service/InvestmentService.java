@@ -4,6 +4,7 @@ import com.alok.home.commons.entity.Investment;
 import com.alok.home.commons.repository.InvestmentRepository;
 import com.alok.home.commons.dto.api.response.InvestmentsResponse;
 import com.alok.home.commons.dto.api.response.InvestmentsRorMetricsResponse;
+import com.alok.home.commons.utils.annotation.compiletime.CompileTimeInfo;
 import com.alok.home.stream.CustomCollectors;
 import lombok.extern.slf4j.Slf4j;
 import org.decampo.xirr.Transaction;
@@ -22,6 +23,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+@CompileTimeInfo(author = "Alok Singh")
 @Slf4j
 @Service
 public class InvestmentService {

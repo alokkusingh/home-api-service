@@ -8,6 +8,7 @@ import com.alok.home.commons.dto.api.response.OdionAccountTransactionsResponse;
 import com.alok.home.commons.dto.api.response.OdionAccountsBalanceResponse;
 import com.alok.home.commons.dto.api.response.OdionMonthlyAccountTransactionResponse;
 import com.alok.home.commons.dto.api.response.OdionTransactionsResponse;
+import com.alok.home.commons.utils.annotation.compiletime.CompileTimeInfo;
 import com.alok.home.stream.CustomCollectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collector;
 
+@CompileTimeInfo(author = "Alok Singh")
 @Slf4j
 @Service
 public class OdionService {
