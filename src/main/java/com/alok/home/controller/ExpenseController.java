@@ -38,9 +38,9 @@ public abstract class ExpenseController {
     })
     public abstract ResponseEntity<ExpensesResponse> getExpenses(
             @Parameter(description = "Optional year and month in format YYYY-MM (e.g. 2024-03)", required = false)
-            @RequestParam(required = false) String yearMonth,
+            @RequestParam(value = "yearMonth", required = false) String yearMonth,
             @Parameter(description = "Optional expense category to filter by", required = false)
-            @RequestParam(required = false) String category
+            @RequestParam(value = "category", required = false) String category
     );
 
     @GetMapping(value = "/categories/names", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -94,16 +94,20 @@ public abstract class ExpenseController {
     @GetMapping(value = "/sum_by_category_month", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get month-wise expense sum by category",
-            description = "Returns month-wise expense sums grouped by category."
+            description = "Returns month-wise expense sums grouped by category. Optional `yearMonth` query parameter filters the month (e.g. 2024-03)."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful response",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ExpensesMonthSumByCategoryResponse.class))
             ),
+            @ApiResponse(responseCode = "400", description = "Invalid yearMonth supplied"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public abstract ResponseEntity<ExpensesMonthSumByCategoryResponse> getMonthWiseExpenseCategorySum();
+    public abstract ResponseEntity<ExpensesMonthSumByCategoryResponse> getMonthWiseExpenseCategorySum(
+            @Parameter(description = "Optional year and month to filter results in format YYYY-MM (e.g. 2024-03)", required = false, example = "2024-03")
+            @RequestParam(value = "yearMonth", required = false) String yearMonth
+    );
 
     @GetMapping(value = "/sum_by_category_year", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
@@ -126,30 +130,38 @@ public abstract class ExpenseController {
     @GetMapping(value = "/sum_by_month", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get month-wise expense sum",
-            description = "Returns aggregated expense sums per month."
+            description = "Returns aggregated expense sums per month. Optional `year` query parameter filters results by year."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful response",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ExpensesMonthSumResponse.class))
             ),
+            @ApiResponse(responseCode = "400", description = "Invalid year supplied"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public abstract ResponseEntity<ExpensesMonthSumResponse> getMonthWiseExpenseSum();
+    public abstract ResponseEntity<ExpensesMonthSumResponse> getMonthWiseExpenseSum(
+            @Parameter(description = "Optional year to filter monthly results (e.g. 2024)", required = false, example = "2024")
+            @RequestParam(value = "year", required = false) Integer year
+    );
 
     @GetMapping(value = "/sum_by_year", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Get year-wise expense sum",
-            description = "Returns aggregated expense sums per year."
+            description = "Returns aggregated expense sums per year. Optional `year` query parameter filters results to a single year."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful response",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ExpensesMonthSumResponse.class))
             ),
+            @ApiResponse(responseCode = "400", description = "Invalid year supplied"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public abstract ResponseEntity<ExpensesMonthSumResponse> getYearWiseExpenseSum();
+    public abstract ResponseEntity<ExpensesMonthSumResponse> getYearWiseExpenseSum(
+            @Parameter(description = "Optional year to filter yearly results (e.g. 2024)", required = false, example = "2024")
+            @RequestParam(value = "year", required = false) Integer year
+    );
 
     @GetMapping(value = "/current_month_by_day", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(

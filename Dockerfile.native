@@ -1,4 +1,4 @@
-FROM alokkusingh/graalvm-ce:23.1.2-java21-arm64 AS builder
+FROM alokkusingh/graalvm-ce:23.1.2-java21-v2-arm64 AS builder
 ARG JAR_FILE
 # Note: native-image is already in above base image (above)
 #RUN gu install native-image

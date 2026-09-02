@@ -111,23 +111,52 @@ public class ExpenseService {
     }
 
     @TrackMethod
-    @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "#root.methodName")
-    public ExpensesMonthSumByCategoryResponse getMonthWiseExpenseCategorySum() {
+    @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "{ #root.methodName, #yearMonth }")
+    public ExpensesMonthSumByCategoryResponse getMonthWiseExpenseCategorySum(String yearMonth) {
         log.info("Month wise Expenses Category Sum not available in cache");
 
         List<IExpenseCategoryMonthSum> expenseCategorySums = expenseRepository.findCategorySumGroupByMonth();
 
+        if (yearMonth != null) {
+            java.time.YearMonth ym;
+            if (yearMonth.equals("current_month")) {
+                ym = java.time.YearMonth.now();
+            } else {
+                String[] ymArr = yearMonth.split("-");
+                if (ymArr.length != 2) {
+                    throw new IllegalArgumentException("yearMonth must be in YYYY-MM format or 'current_month'");
+                }
+                try {
+                    ym = java.time.YearMonth.of(Integer.parseInt(ymArr[0]), Integer.parseInt(ymArr[1]));
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("yearMonth must be in YYYY-MM format or 'current_month'", e);
+                }
+            }
+
+            expenseCategorySums = expenseCategorySums.stream()
+                    .filter(record -> record.getYearx() == ym.getYear() && record.getMonthx() == ym.getMonthValue())
+                    .toList();
+        }
+
+        var records = expenseCategorySums.stream().map(
+                expMetricSum -> ExpensesMonthSumByCategoryResponse.ExpenseCategoryMonthSum.builder()
+                        .year(expMetricSum.getYearx())
+                        .month(expMetricSum.getMonthx())
+                        .category(expMetricSum.getCategory())
+                        .sum(expMetricSum.getSum())
+                        .build()
+        ).toList();
+
         return ExpensesMonthSumByCategoryResponse.builder()
-                .expenseCategorySums(expenseCategorySums.stream().map(
-                        expMetricSum -> ExpensesMonthSumByCategoryResponse.ExpenseCategoryMonthSum.builder()
-                                .year(expMetricSum.getYearx())
-                                .month(expMetricSum.getMonthx())
-                                .category(expMetricSum.getCategory())
-                                .sum(expMetricSum.getSum())
-                                .build()
-                ).toList())
-                .count(expenseCategorySums.size())
+                .expenseCategorySums(records)
+                .count(records.size())
                 .build();
+    }
+
+    @TrackMethod
+    @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "#root.methodName")
+    public ExpensesMonthSumByCategoryResponse getMonthWiseExpenseCategorySum() {
+        return getMonthWiseExpenseCategorySum(null);
     }
 
     @TrackMethod
@@ -174,16 +203,25 @@ public class ExpenseService {
     }
 
     @TrackMethod
-    @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "#root.methodName")
-    public ExpensesMonthSumResponse getMonthWiseExpenseSum() {
+    @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "{ #root.methodName, #year }")
+    public ExpensesMonthSumResponse getMonthWiseExpenseSum(Integer year) {
         log.info("Month wise Expenses Sum not available in cache");
 
         List<IExpenseMonthSum> expenseSums = expenseRepository.findSumGroupByMonth();
+        var records = expenseSums.stream()
+                .filter(record -> (year == null) || year.equals(record.getYearx()))
+                .toList();
 
         return ExpensesMonthSumResponse.builder()
-                .expenseCategorySums(expenseSums)
-                .count(expenseSums.size())
+                .expenseCategorySums(records)
+                .count(records.size())
                 .build();
+    }
+
+    @TrackMethod
+    @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "#root.methodName")
+    public ExpensesMonthSumResponse getMonthWiseExpenseSum() {
+        return getMonthWiseExpenseSum(null);
     }
 
     @TrackMethod
@@ -196,13 +234,22 @@ public class ExpenseService {
     }
 
     @TrackMethod
-    public ExpensesMonthSumResponse getYearWiseExpenseSum() {
+    public ExpensesMonthSumResponse getYearWiseExpenseSum(Integer year) {
         List<IExpenseMonthSum> expenseSums = expenseRepository.findSumGroupByYear();
+        var records = expenseSums.stream()
+                .filter(record -> (year == null) || year.equals(record.getYearx()))
+                .toList();
 
         return ExpensesMonthSumResponse.builder()
-                .expenseCategorySums(expenseSums)
-                .count(expenseSums.size())
+                .expenseCategorySums(records)
+                .count(records.size())
                 .build();
+    }
+
+    @TrackMethod
+    @Cacheable(value = CacheConfig.CacheName.EXPENSE, key = "#root.methodName")
+    public ExpensesMonthSumResponse getYearWiseExpenseSum() {
+        return getYearWiseExpenseSum(null);
     }
 
     @TrackMethod

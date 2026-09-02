@@ -11,10 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,8 +34,8 @@ public class ExpenseControllerImpl extends ExpenseController {
 
     @LogExecutionTime
     public ResponseEntity<ExpensesResponse> getExpenses(
-            String yearMonth,
-            String category
+           @RequestParam(value = "yearMonth", required = false) String yearMonth,
+           @RequestParam(value = "category", required = false) String category
     ) {
         ExpensesResponse expenses = null;
         if (yearMonth == null && category == null)
@@ -41,18 +43,22 @@ public class ExpenseControllerImpl extends ExpenseController {
         else if (yearMonth == null && category != null)
             expenses = expenseService.getExpensesForCategory(category);
         else if (yearMonth != null) {
-             java.time.YearMonth ym = null;
-            if (yearMonth.equals("current_month"))
+           java.time.YearMonth ym;
+           if (yearMonth.equals("current_month")) {
                 ym = java.time.YearMonth.now();
-            else {
-                String ymArr[] = yearMonth.split("-");
-                ym = java.time.YearMonth.of(Integer.valueOf(ymArr[0]), Integer.valueOf(ymArr[1]));
-            }
+           } else {
+               String[] ymArr = yearMonth.split("-");
+               if (ymArr.length != 2) {
+                   throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "yearMonth must be in YYYY-MM format or 'current_month'");
+               }
+               try {
+                   ym = java.time.YearMonth.of(Integer.parseInt(ymArr[0]), Integer.parseInt(ymArr[1]));
+               } catch (NumberFormatException e) {
+                   throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "yearMonth must be in YYYY-MM format or 'current_month'", e);
+               }
+           }
 
-            expenses = expenseService.getExpensesForMonth(
-                    ym,
-                    category
-            );
+           expenses = expenseService.getExpensesForMonth(ym, category);
         }
 
         return ResponseEntity.ok()
@@ -84,10 +90,16 @@ public class ExpenseControllerImpl extends ExpenseController {
     }
 
     @LogExecutionTime
-    public ResponseEntity<ExpensesMonthSumByCategoryResponse> getMonthWiseExpenseCategorySum() {
-        return ResponseEntity.ok()
-                .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
-                .body(expenseService.getMonthWiseExpenseCategorySum());
+    public ResponseEntity<ExpensesMonthSumByCategoryResponse> getMonthWiseExpenseCategorySum(
+            @RequestParam(value = "yearMonth", required = false) String yearMonth
+    ) {
+        try {
+            return ResponseEntity.ok()
+                    .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
+                    .body(expenseService.getMonthWiseExpenseCategorySum(yearMonth));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "yearMonth must be in YYYY-MM format or 'current_month'", e);
+        }
     }
 
     @LogExecutionTime
@@ -100,16 +112,21 @@ public class ExpenseControllerImpl extends ExpenseController {
     }
 
     @LogExecutionTime
-    public ResponseEntity<ExpensesMonthSumResponse> getMonthWiseExpenseSum() {
+    public ResponseEntity<ExpensesMonthSumResponse> getMonthWiseExpenseSum(
+            @RequestParam(value = "year", required = false) Integer year
+    ) {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
-                .body(expenseService.getMonthWiseExpenseSum());
+                .body(expenseService.getMonthWiseExpenseSum(year));
     }
+
     @LogExecutionTime
-    public ResponseEntity<ExpensesMonthSumResponse> getYearWiseExpenseSum() {
+    public ResponseEntity<ExpensesMonthSumResponse> getYearWiseExpenseSum(
+            @RequestParam(value = "year", required = false) Integer year
+    ) {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(cacheControlMaxAge, TimeUnit.SECONDS).noTransform().mustRevalidate())
-                .body(expenseService.getYearWiseExpenseSum());
+                .body(expenseService.getYearWiseExpenseSum(year));
     }
 
     @LogExecutionTime
