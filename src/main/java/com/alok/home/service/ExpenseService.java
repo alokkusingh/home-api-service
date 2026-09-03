@@ -393,4 +393,28 @@ public class ExpenseService {
                 .sorted()
                 .collect(Collectors.toList());
     }
+
+    public ExpensesResponse getExpensesForYear(int yearInt, String category) {
+        List<Expense> expenses = null;
+        if (category == null)
+            expenses = expenseRepository.findAllForYear(yearInt);
+        else
+            expenses = expenseRepository.findAllForYearAndCategory(yearInt, category);
+
+        Collections.sort(expenses, (t1, t2) -> t2.getDate().compareTo(t1.getDate()));
+
+        return ExpensesResponse.builder()
+                .expenses(expenses.stream()
+                        .map(expense -> ExpensesResponse.Expense.builder()
+                                .id(expense.getId())
+                                .date(expense.getDate())
+                                .head(expense.getHead())
+                                .amount(expense.getAmount())
+                                .category(expense.getCategory())
+                                .comment(expense.getComment())
+                                .build())
+                        .collect(Collectors.toList()))
+                .count(expenses.size())
+                .build();
+    }
 }

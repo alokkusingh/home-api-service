@@ -35,12 +35,13 @@ public class ExpenseControllerImpl extends ExpenseController {
     @LogExecutionTime
     public ResponseEntity<ExpensesResponse> getExpenses(
            @RequestParam(value = "yearMonth", required = false) String yearMonth,
+           @RequestParam(value = "year", required = false) String year,
            @RequestParam(value = "category", required = false) String category
     ) {
         ExpensesResponse expenses = null;
-        if (yearMonth == null && category == null)
+        if (yearMonth == null && category == null && year == null)
            expenses = expenseService.getAllExpenses();
-        else if (yearMonth == null && category != null)
+        else if (yearMonth == null && year == null && category != null)
             expenses = expenseService.getExpensesForCategory(category);
         else if (yearMonth != null) {
            java.time.YearMonth ym;
@@ -59,6 +60,14 @@ public class ExpenseControllerImpl extends ExpenseController {
            }
 
            expenses = expenseService.getExpensesForMonth(ym, category);
+        }
+        else if (year != null) {
+            try {
+                int yearInt = Integer.parseInt(year);
+                expenses = expenseService.getExpensesForYear(yearInt, category);
+            } catch (NumberFormatException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "year must be a valid integer", e);
+            }
         }
 
         return ResponseEntity.ok()

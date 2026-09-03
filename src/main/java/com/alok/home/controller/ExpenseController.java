@@ -39,6 +39,8 @@ public abstract class ExpenseController {
     public abstract ResponseEntity<ExpensesResponse> getExpenses(
             @Parameter(description = "Optional year and month in format YYYY-MM (e.g. 2024-03)", required = false)
             @RequestParam(value = "yearMonth", required = false) String yearMonth,
+            @Parameter(description = "Optional year in format YYYY (e.g. 2024)", required = false)
+            @RequestParam(value = "year", required = false) String year,
             @Parameter(description = "Optional expense category to filter by", required = false)
             @RequestParam(value = "category", required = false) String category
     );
