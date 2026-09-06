@@ -37,6 +37,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/expense", "/expense/**").hasAnyRole("ADMIN", "USER", "home_api_ro", "home_api_rw", "LOCALHOST");
                     auth.requestMatchers("/investment", "/investment/**").hasAnyRole("ADMIN", "USER", "home_api_ro", "home_api_rw", "LOCALHOST");
                     auth.requestMatchers("/tax", "/tax/**").hasAnyRole("ADMIN", "USER", "home_api_ro", "home_api_rw", "LOCALHOST");
+                    auth.requestMatchers("/timeline", "/timeline/events", "/timeline/events/**", "/timeline/family","/timeline/family/**").hasAnyRole("ADMIN", "USER", "home_api_ro", "home_api_rw", "LOCALHOST");
 
                     auth.requestMatchers("/summary/**").hasAnyRole("ADMIN", "home_api_ro", "home_api_rw", "LOCALHOST");
                     auth.requestMatchers("/bank", "/bank/**").hasAnyRole("ADMIN", "home_api_ro", "home_api_rw", "LOCALHOST");
