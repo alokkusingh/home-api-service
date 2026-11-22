@@ -40,6 +40,7 @@ public class DayExpenseCollector implements Collector<Expense, Map<LocalDate, Ex
                         .amount(expense.getAmount())
                         .head(expense.getHead())
                         .comment(expense.getComment())
+                        .category(expense.getCategory())
                         .build());
                 dayExpenses.setAmount(dayExpenses.getAmount() + expense.getAmount());
             };
